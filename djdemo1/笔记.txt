@@ -1,0 +1,27 @@
+工程目录下，运行django-admin startproject 工程名(djdemo1)，创建django工程。此时工程下会生动djdemo1主模块。
+django-admin startapp(app1) 模块名，创建新的子模块app1。
+python 工程目录/manage.py runserver localhost:8000开启服务器在8000端口
+
+创建模块后(假设模块名app1)，在/djdemo1\settings.py的INSTALLED_APPS加上'app1',
+django就会在需要时扫描app1里的templates文件夹，查找需要的html文件。
+如果不加的话，需要在TEMPLATES.DIRS里加上app1的templates的路径。比如：
+TEMPLATES = [{'DIRS': [***
+            # os.path.join(BASE_DIR, "/app1/templates/"),
+        ],  ***}
+
+引入静态资源：
+在子模块下创建static/css/a.js,
+在view里返回的html文件顶部加上{% load static %}(否则报错{% load static %}),
+head里加上<script src="{% static 'js/111.js' %}"  ></script>,即可引用该js。
+文件放在其他子模块里也可访问，放在主模块里无法访问。
+
+django模板遍历数组时可以从{{forloop}}对象获取index，代码如下
+    {%for p in products%}
+        <div> {{forloop}}>>{{p}}</div>
+    {%endfor%}
+
+
+
+
+
+
