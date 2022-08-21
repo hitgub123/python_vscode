@@ -1,0 +1,32 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="{% static 'js/111.js' %}"  ></script>
+</head>
+<body>
+    t1 html from {{from}}<br>
+    <div>对象取属性：{{user.password}}</div>
+    <div>products[0]price的写法是：{{products.0.price}}</div>
+    <h3>遍历对象：</h3>
+    {%for k,v in user.items%}
+        <div>{{k}}>>{{v}}</div>
+    {%endfor%}
+    <h3>遍历数组：</h3>
+    {%for p in products%}
+        <div> {{forloop}}>>{{p}}</div>
+    {%endfor%}
+    <h3>if else：</h3>
+    {%if 3 > 4 %}
+        <span>case if1</span>
+    {%elif 41 > 5 %}
+        <span>case elif</span>
+    {%else%}
+        <span>case else</span>
+    {%endif%}
+</body>
+</html>

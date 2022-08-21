@@ -1,0 +1,30 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <style src="{% static 'js/bootstrap.min.css' %}" ref="stylesheet"></style>
+    <title>app1 update html</title>
+</head>
+
+<body>
+    <form method="post" action="/a1/{{obj.id}}/au" enctype="multipart/form-data">
+        {% csrf_token %}
+        商品名<input name="name" value="{{obj.name}}" /><br>
+        商品价格<input name="price" value="{{obj.price}}" /><br>
+        商品数量<input name="count" value="{{obj.count}}" /><br>
+        商品类别<input name="category" value="{{obj.category_id}}" /><br>
+        商品图片<input name="pic" type='file' value="{{obj.pic}}"/><br>
+        <img src="{{obj.pic}}" alt="" style="height: 100px">
+        时间<input name="time"  value="{{obj.time}}" /><br>
+        <div style="color:red">{{msg}}</div>
+        <button type="submit">提交</button>
+
+    </form>
+</body>
+
+</html>

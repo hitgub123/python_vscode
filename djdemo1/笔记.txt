@@ -20,7 +20,7 @@ django模板遍历数组时可以从{{forloop}}对象获取index，代码如下
         <div> {{forloop}}>>{{p}}</div>
     {%endfor%}
 
-
+request.POST/GET.get('id',1)表示没有id字段时，加上id字段并赋值1.如果有字段但没值，不会给赋值。
 
 
 
