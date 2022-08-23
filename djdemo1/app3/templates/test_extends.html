@@ -2,17 +2,49 @@
 {%load static%}
 
 {% block head %}
-<script src="{% static 'js/bootstrap.min.js' %}"></script>
-<style src="{% static 'js/bootstrap.min.css' %}" ref="stylesheet"></style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <title>app3</title>
-{% endblock %} 
+{% endblock %}
 
 
 {% block body %}
-  <p>This page has a body page</p>
-{% endblock %} 
+<p>This page has a body page</p>
+<button type="button" id="getbutton">GET</button>
+<button type="button" id="postbutton">POST</button>
+<script>
+  // $(function () {
+    $("#getbutton").on("click", function (event) {
+      $.ajax({
+        type: "get",
+        url: "/a3/ajax",
+        data: { "id": 11 },
+        dataType: "json"
+      }).done(function (data) {
+        console.log(data,typeof(data));
+      }).fail(function (XMLHttpRequest, status, e) {
+        console.error(XMLHttpRequest, status, e);
+      });
+    });
+
+    $("#postbutton").on("click", function (event) {
+      $.ajax({
+        type: "post",
+        url: "/a3/ajax",
+        data: { "id": 111 },
+        dataType: "json"
+      }).done(function (data) {
+        console.log(data,typeof(data));
+      }).fail(function (XMLHttpRequest, status, e) {
+        console.error(XMLHttpRequest, status, e);
+      });
+    });
+  // });
+
+</script>
+{% endblock %}
 
 
 {% block foot %}
-  <p>This page has a foot page</p>
-{% endblock %} 
+<p>This page has a foot page</p>
+{% endblock %}

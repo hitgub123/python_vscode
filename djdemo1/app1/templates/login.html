@@ -11,6 +11,7 @@
         {% csrf_token %}
         <input  name="user" value="账号1" />
         <input  name="password" value="密码1" />
+        <input type="hidden" name="redirect_url" />
         <div style="color:red">{{msg}}</div>
         <button type="submit" >提交</button>
     </form>

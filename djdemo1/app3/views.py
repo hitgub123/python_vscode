@@ -1,18 +1,36 @@
 
 from django.shortcuts import render
 from datetime import datetime
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from django.shortcuts import redirect, render
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
 from baseApp import utils
 from app3 import models
 from app3.myform import ProductForm
 # 也可以写 from .myform import ProductForm
 
+def re_int(request):
+    return HttpResponse('re_int')
 
+def re_alphabet(request):
+    return HttpResponse('re_alphabet')
+
+def re_all(request):
+    return HttpResponse('re_all')
+
+    
 def home(request):
     return render(request, 'test_extends.html')
+
+@csrf_exempt
+def ajax(request):
+    if request.method == 'GET':
+        print(request.GET)
+        return JsonResponse({'code':555,'method':'doget'})    
+    print(request.POST)
+    return JsonResponse({'code':666,'method':'dopost'})   
 
 
 def select(request):

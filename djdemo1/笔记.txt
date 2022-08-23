@@ -32,7 +32,7 @@ request.POST/GET.get('id',1)表示没有id字段时，加上id字段并赋值1.�
         如果description是整数，可以这样设置。
         如果是外键，设置 models.ForeignKey即可，不用设置choices
 
-myform里通过clean钩子函数，对数据进行笔记复杂的验证，检验不通过时可以：
+myform里通过clean钩子函数，对数据进行笔记复杂的验证(比如两次输入的密码是否一样)，检验不通过时可以：
     方法1：推荐，self.add_error可以把error msg写到相应的字段上
     方法2：不推荐，raise ValidationError(error msg)
     要在原页面的对应字段上提示error msg，需要返回原页面，且传form过去。代码如下：
@@ -40,5 +40,8 @@ myform里通过clean钩子函数，对数据进行笔记复杂的验证，检验
 
 settings.py里可设置报错信息为中文：LANGUAGE_CODE = 'zh-hans'
 
+ProductForm里设置CharField等，是为了定义检验规则，如果不定义可以不写
 
+响应ajax请求的views方法需要加上@csrf_exempt注解，否则post请求报错，get可以
+from django.views.decorators.csrf import csrf_exempt
 

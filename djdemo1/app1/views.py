@@ -6,7 +6,6 @@ from django.conf import settings
 from baseApp import utils
 
 
-
 def hello(request):
     return HttpResponse("Hello world ! ")
 
@@ -32,30 +31,50 @@ def t2(request):
 
 
 def login(request):
-    print(request.method)
+    # print(request.method,request.path)
     if request.method == "GET":
-        print(request.GET)
-        return render(request, "login.html")
+        # print(request.GET)
+        return render(request, "login.html", {'redirect_url': request.path})
     if request.method == "POST":
-        print(request.POST)
-        if request.POST.get('password'):
-            pwd = request.POST['password']
-            print(type(pwd), pwd)
-            return redirect('/a1/t1')
+        # print(request.POST)
+        if request.POST.get('user'):
+            # pwd = request.POST['password']
+            # print(type(pwd), pwd)
+            request.session['user'] = request.POST.get('user')
+
+            # set_expiry(value)，设置过期时间。value的值有几种情况：
+            # 整数： 单位为秒，表示在value秒之后session失效
+            # datetime对象: 会在datetime指定时间之后失效
+            # 0: 关闭浏览器之后就失效
+            # None: 依赖全局的session失效策略配置
+            request.session.set_expiry(0)
+
+            redirect_url=request.session.get('redirect_url') 
+            redirect_url =redirect_url if redirect_url else '/a1/t1'
+            # print(request.session.items(),1,request.session.get_expiry_date())
+
+            # 清除某个session
+            if 'redirect_url' in request.session:
+                request.session.pop('redirect_url')
+            # print(request.session.items(),2)
+            return redirect(redirect_url)
     return render(request, "login.html", {'msg': 'password error'})
 
+def logout(request):
+    print(request.session.__dict__,1)
+    request.session.clear()
+    print(request.session.__dict__,2)
+    return redirect('/login')
 
 def select(request):
     # 通过objects这个模型管理器的all()获得所有数据行，相当于SQL中的SELECT * FROM
     # products = models.Product.objects.all()
-
 
     # filter相当于SQL中的WHERE，可设置条件过滤结果
     # products = models.Product.objects.filter(id=21)
 
     # <=
     # products = models.Product.objects.filter(id__lte=23)
-    
 
     # 限制返回的数据 相当于 SQL 中的 OFFSET 0 LIMIT 5;
     # products=models.Product.objects.order_by('name')[0:5]
@@ -71,10 +90,11 @@ def select(request):
     pagesizeS = request.GET.get('pagesize')
     pagesize = int(pagesizeS) if pagesizeS else 5
     pageS = request.GET.get('page')
-    page=int(pageS) if pageS else 1
+    page = int(pageS) if pageS else 1
     products = models.Product.objects.order_by(
         'id')[pagesize*page-pagesize:pagesize*page]
     return render(request, "list.html", {'objs': products})
+
 
 def delete(request, id):
     # 删除id=1的数据
@@ -86,7 +106,7 @@ def delete(request, id):
     # 删除所有数据
     # models.Product.objects.all().delete()
 
-    #get找不到会报错，filter会返回空`数组`
+    # get找不到会报错，filter会返回空`数组`
     models.Product.objects.get(id=id).delete()
     return redirect("/a1/list")
 
@@ -102,25 +122,25 @@ def addORupdate(request, id):
     # print(request.GET)
     # print(id)
 
-    myfile = request.FILES.get('pic',None)
+    myfile = request.FILES.get('pic', None)
     try:
-        filename=utils.upload_file(myfile, settings.MEDIA_ROOT)
+        filename = utils.upload_file(myfile, settings.MEDIA_ROOT)
     except Exception as e:
         return HttpResponse(e)
 
-    objmap={
+    objmap = {
         'name': request.POST.get('name', 'No Name'),
         'price': request.POST.get('price', 250),
         'count': request.POST.get('count', 7),
         'category_id': request.POST.get('category', 'No category'),
         'pic': settings.MEDIA_URL+filename,
         'description': request.POST.get('description', 'No Description'),
-        'time':datetime.now()
+        'time': datetime.now()
     }
     # print(request.FILES)
-    print('>>',objmap)
-    if  id==0:
-        obj=models.Product(**objmap)
+    print('>>', objmap)
+    if id == 0:
+        obj = models.Product(**objmap)
         obj.save()
     else:
         models.Product.objects.filter(id=id).update(**objmap)

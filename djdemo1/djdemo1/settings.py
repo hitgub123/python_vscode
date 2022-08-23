@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'app1',
     'app2',
     'app3',
+
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'app3.middleware.MyMiddleware',
 ]
 
 ROOT_URLCONF = 'djdemo1.urls'

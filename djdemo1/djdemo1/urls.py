@@ -2,9 +2,10 @@
 from django.contrib import admin
 
 from django.conf import settings
-from django.conf.urls.static import static
+from django.conf.urls.static import static,serve
+from django.views.generic.base import RedirectView
 
-from django.urls import path
+from django.urls import path,re_path
 import app1.views as a1v
 import app2.views as a2v
 import app3.views as a3v
@@ -15,7 +16,8 @@ urlpatterns = [
     path('a1', a1v.hello),
     path('a1/t1', a1v.t1),
     path('a1/t2', a1v.t2),
-    path('a1/login', a1v.login),
+    path('login', a1v.login),
+    path('logout', a1v.logout),
 
     path('a1/list', a1v.select),
     path('a1/del/<int:id>', a1v.delete),
@@ -31,8 +33,19 @@ urlpatterns = [
     path('a3/del/<int:id>', a3v.delete),
     path('a3/<int:id>/au', a3v.addORupdate),
     path('a3', a3v.home),
+    path('a3/ajax', a3v.ajax),
+
+    # re_path(r'a3/re/\d*$', a3v.re_int),
+    # re_path(r'a3/re/[A-Za-z]+$', a3v.re_alphabet),
+    re_path(r'a3/re/.*$', a3v.re_all),
+
+    path('favicon.ico', RedirectView.as_view(url=r'media/favicon.ico')), 
+    # path('favicon.ico', RedirectView.as_view(url=r'static/img/1.jpg')), 
+
+    
+    re_path(r'^media/(?P<path>.*)$', serve,{'document_root':settings.MEDIA_ROOT},name='media'),
 
 ]
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL,
-                          document_root=settings.MEDIA_ROOT)
+# if settings.DEBUG:
+#     urlpatterns += static(settings.MEDIA_URL,
+#                           document_root=settings.MEDIA_ROOT)

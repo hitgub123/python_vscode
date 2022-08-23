@@ -29,7 +29,7 @@ class ProductForm(forms.ModelForm):
 
     
     
-    # 钩子
+    # 钩子，对name字段专用
     def clean_name(self):
         name = self.cleaned_data.get('name')
         # print('clean_name', len(name), self.cleaned_data)
