@@ -1,3 +1,16 @@
+项目结构：
+    app1模块：
+        不使用form和ModelForm的增删改查，上传文件，没做分页组件和数据校验
+    app2模块：
+        使用form
+    app3模块：  
+
+    文计上传没有删除无用文件
+    m1-m3模块和t1-t4.py用来测试本地模块的import
+
+====================================================================================
+
+
 工程目录下，运行django-admin startproject 工程名(djdemo1)，创建django工程。此时工程下会生动djdemo1主模块。
 django-admin startapp(app1) 模块名，创建新的子模块app1。
 python 工程目录/manage.py runserver localhost:8000开启服务器在8000端口
