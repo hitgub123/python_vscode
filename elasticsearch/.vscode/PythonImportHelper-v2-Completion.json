@@ -1,0 +1,243 @@
+[
+    {
+        "label": "Elasticsearch",
+        "importPath": "elasticsearch",
+        "description": "elasticsearch",
+        "isExtraImport": true,
+        "detail": "elasticsearch",
+        "documentation": {}
+    },
+    {
+        "label": "Elasticsearch",
+        "importPath": "elasticsearch",
+        "description": "elasticsearch",
+        "isExtraImport": true,
+        "detail": "elasticsearch",
+        "documentation": {}
+    },
+    {
+        "label": "Elasticsearch",
+        "importPath": "elasticsearch",
+        "description": "elasticsearch",
+        "isExtraImport": true,
+        "detail": "elasticsearch",
+        "documentation": {}
+    },
+    {
+        "label": "helpers",
+        "importPath": "elasticsearch",
+        "description": "elasticsearch",
+        "isExtraImport": true,
+        "detail": "elasticsearch",
+        "documentation": {}
+    },
+    {
+        "label": "Elasticsearch",
+        "importPath": "elasticsearch",
+        "description": "elasticsearch",
+        "isExtraImport": true,
+        "detail": "elasticsearch",
+        "documentation": {}
+    },
+    {
+        "label": "base64",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "base64",
+        "description": "base64",
+        "detail": "base64",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests",
+        "description": "requests",
+        "detail": "requests",
+        "documentation": {}
+    },
+    {
+        "label": "get_embedings",
+        "importPath": "gemini_api_util",
+        "description": "gemini_api_util",
+        "isExtraImport": true,
+        "detail": "gemini_api_util",
+        "documentation": {}
+    },
+    {
+        "label": "genai",
+        "importPath": "google",
+        "description": "google",
+        "isExtraImport": true,
+        "detail": "google",
+        "documentation": {}
+    },
+    {
+        "label": "types",
+        "importPath": "google.genai",
+        "description": "google.genai",
+        "isExtraImport": true,
+        "detail": "google.genai",
+        "documentation": {}
+    },
+    {
+        "label": "Flask",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "request",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "jsonify",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "index_file",
+        "kind": 2,
+        "importPath": "create_index",
+        "description": "create_index",
+        "peekOfCode": "def index_file(file_path, index_name=\"test-index1\"):\n    try:\n        with open(file_path, \"rb\") as f:\n            content = base64.b64encode(f.read()).decode(\"utf-8\")\n        doc = {\n            \"name\": os.path.basename(file_path),\n            \"type\": os.path.splitext(file_path)[1][1:].lower(),\n            \"content\": content\n        }\n        # 索引文件，使用 test1 管道",
+        "detail": "create_index",
+        "documentation": {}
+    },
+    {
+        "label": "es",
+        "kind": 5,
+        "importPath": "create_index",
+        "description": "create_index",
+        "peekOfCode": "es = Elasticsearch(\n    [\"https://127.0.0.1:9200\"],\n    http_auth=(\"elastic\", \"AVz2_EK*zDFKJnnem3fi\"),\n    ca_certs=\"D:/tools/elasticsearch-9.0.3/config/certs/http_ca.crt\",\n)\ndef index_file(file_path, index_name=\"test-index1\"):\n    try:\n        with open(file_path, \"rb\") as f:\n            content = base64.b64encode(f.read()).decode(\"utf-8\")\n        doc = {",
+        "detail": "create_index",
+        "documentation": {}
+    },
+    {
+        "label": "folder_path",
+        "kind": 5,
+        "importPath": "create_index",
+        "description": "create_index",
+        "peekOfCode": "folder_path = \"./doc\"  # 替换为你的文件目录\nfor filename in os.listdir(folder_path):\n    file_path = os.path.join(folder_path, filename)\n    if filename.lower().endswith(('.pdf', '.doc', '.docx', '.xls', '.xlsx','txt','ppt')):\n        index_file(file_path)",
+        "detail": "create_index",
+        "documentation": {}
+    },
+    {
+        "label": "response",
+        "kind": 5,
+        "importPath": "create_vector",
+        "description": "create_vector",
+        "peekOfCode": "response = requests.post(\"https://api.gemini.ai/v1/encode\", json={\"text\": text})\nvector = response.json()[\"vector\"]\n# 连接到 Elasticsearch\nes = Elasticsearch(\n    [\"https://127.0.0.1:9200\"],\n    http_auth=(\"elastic\", \"AVz2_EK*zDFKJnnem3fi\"),\n    ca_certs=\"D:/tools/elasticsearch-9.0.3/config/certs/http_ca.crt\",\n)\n# 存储向量到 Elasticsearch\nes.index(index=\"test-index2\", body={\"vector\": vector})",
+        "detail": "create_vector",
+        "documentation": {}
+    },
+    {
+        "label": "vector",
+        "kind": 5,
+        "importPath": "create_vector",
+        "description": "create_vector",
+        "peekOfCode": "vector = response.json()[\"vector\"]\n# 连接到 Elasticsearch\nes = Elasticsearch(\n    [\"https://127.0.0.1:9200\"],\n    http_auth=(\"elastic\", \"AVz2_EK*zDFKJnnem3fi\"),\n    ca_certs=\"D:/tools/elasticsearch-9.0.3/config/certs/http_ca.crt\",\n)\n# 存储向量到 Elasticsearch\nes.index(index=\"test-index2\", body={\"vector\": vector})",
+        "detail": "create_vector",
+        "documentation": {}
+    },
+    {
+        "label": "es",
+        "kind": 5,
+        "importPath": "create_vector",
+        "description": "create_vector",
+        "peekOfCode": "es = Elasticsearch(\n    [\"https://127.0.0.1:9200\"],\n    http_auth=(\"elastic\", \"AVz2_EK*zDFKJnnem3fi\"),\n    ca_certs=\"D:/tools/elasticsearch-9.0.3/config/certs/http_ca.crt\",\n)\n# 存储向量到 Elasticsearch\nes.index(index=\"test-index2\", body={\"vector\": vector})",
+        "detail": "create_vector",
+        "documentation": {}
+    },
+    {
+        "label": "update_mapping",
+        "kind": 2,
+        "importPath": "es_cloud_demo",
+        "description": "es_cloud_demo",
+        "peekOfCode": "def update_mapping(client, index_name,dims):\n    mappings = {\n        \"properties\": {\n            \"vector\": {\"type\": \"dense_vector\", \"dims\": dims},\n            \"text\": {\"type\": \"text\"},\n        }\n    }\n    mapping_response = client.indices.put_mapping(index=index_name, body=mappings)\n    print(mapping_response)\ndef update_index(client,docs, index_name):",
+        "detail": "es_cloud_demo",
+        "documentation": {}
+    },
+    {
+        "label": "update_index",
+        "kind": 2,
+        "importPath": "es_cloud_demo",
+        "description": "es_cloud_demo",
+        "peekOfCode": "def update_index(client,docs, index_name):\n    bulk_response = helpers.bulk(client, docs, index=index_name)\n    print(bulk_response)\ndef query(client, query_embedding):\n    body = {\n        \"query\": {\n            \"script_score\": {\n                \"query\": {\"match_all\": {}},\n                \"script\": {\n                    \"source\": \"cosineSimilarity(params.query_vector, 'vector') + 1.0\",",
+        "detail": "es_cloud_demo",
+        "documentation": {}
+    },
+    {
+        "label": "query",
+        "kind": 2,
+        "importPath": "es_cloud_demo",
+        "description": "es_cloud_demo",
+        "peekOfCode": "def query(client, query_embedding):\n    body = {\n        \"query\": {\n            \"script_score\": {\n                \"query\": {\"match_all\": {}},\n                \"script\": {\n                    \"source\": \"cosineSimilarity(params.query_vector, 'vector') + 1.0\",\n                    \"params\": {\"query_vector\": query_embedding},\n                },\n            }",
+        "detail": "es_cloud_demo",
+        "documentation": {}
+    },
+    {
+        "label": "get_ai_client",
+        "kind": 2,
+        "importPath": "gemini_api_util",
+        "description": "gemini_api_util",
+        "peekOfCode": "def get_ai_client():\n    api_key = os.environ.get(\"ceria_gemini_api_key\")\n    client = genai.Client(api_key=api_key)\n    return client\ndef get_embedings(text, dims, model=\"gemini-embedding-001\"):\n    # text = \"Yellowstone National Park\"\n    # 生成嵌入（截断到 3 维以匹配你的索引）\n    result = get_ai_client().models.embed_content(\n        model=model,\n        contents=text,",
+        "detail": "gemini_api_util",
+        "documentation": {}
+    },
+    {
+        "label": "get_embedings",
+        "kind": 2,
+        "importPath": "gemini_api_util",
+        "description": "gemini_api_util",
+        "peekOfCode": "def get_embedings(text, dims, model=\"gemini-embedding-001\"):\n    # text = \"Yellowstone National Park\"\n    # 生成嵌入（截断到 3 维以匹配你的索引）\n    result = get_ai_client().models.embed_content(\n        model=model,\n        contents=text,\n        config=types.EmbedContentConfig(output_dimensionality=dims),\n    )\n    emb=result.embeddings\n    # print(emb)  # 示例输出: [0.123, -0.456, 0.789]",
+        "detail": "gemini_api_util",
+        "documentation": {}
+    },
+    {
+        "label": "search",
+        "kind": 2,
+        "importPath": "search_ui",
+        "description": "search_ui",
+        "peekOfCode": "def search():\n    query = request.args.get('q', '')\n    body = {\n        \"query\": {\n            \"match\": {\n                \"attachment.content\": query\n            }\n        },\n        \"highlight\": {\n            \"fields\": {",
+        "detail": "search_ui",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "search_ui",
+        "description": "search_ui",
+        "peekOfCode": "app = Flask(__name__)\nes = Elasticsearch([\"http://127.0.0.1:9200\"])\n@app.route('/search', methods=['GET'])\ndef search():\n    query = request.args.get('q', '')\n    body = {\n        \"query\": {\n            \"match\": {\n                \"attachment.content\": query\n            }",
+        "detail": "search_ui",
+        "documentation": {}
+    },
+    {
+        "label": "es",
+        "kind": 5,
+        "importPath": "search_ui",
+        "description": "search_ui",
+        "peekOfCode": "es = Elasticsearch([\"http://127.0.0.1:9200\"])\n@app.route('/search', methods=['GET'])\ndef search():\n    query = request.args.get('q', '')\n    body = {\n        \"query\": {\n            \"match\": {\n                \"attachment.content\": query\n            }\n        },",
+        "detail": "search_ui",
+        "documentation": {}
+    }
+]
