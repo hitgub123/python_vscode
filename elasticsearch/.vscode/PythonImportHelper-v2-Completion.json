@@ -90,44 +90,12 @@
         "documentation": {}
     },
     {
-        "label": "get_embedings",
-        "importPath": "gemini_api_util",
-        "description": "gemini_api_util",
-        "isExtraImport": true,
-        "detail": "gemini_api_util",
-        "documentation": {}
-    },
-    {
-        "label": "get_embedings",
-        "importPath": "gemini_api_util",
-        "description": "gemini_api_util",
-        "isExtraImport": true,
-        "detail": "gemini_api_util",
-        "documentation": {}
-    },
-    {
-        "label": "get_embedings",
-        "importPath": "gemini_api_util",
-        "description": "gemini_api_util",
-        "isExtraImport": true,
-        "detail": "gemini_api_util",
-        "documentation": {}
-    },
-    {
-        "label": "get_embedings",
-        "importPath": "gemini_api_util",
-        "description": "gemini_api_util",
-        "isExtraImport": true,
-        "detail": "gemini_api_util",
-        "documentation": {}
-    },
-    {
-        "label": "es_cloud_util",
+        "label": "es_cloud_util,gemini_api_util",
         "kind": 6,
         "isExtraImport": true,
-        "importPath": "es_cloud_util",
-        "description": "es_cloud_util",
-        "detail": "es_cloud_util",
+        "importPath": "es_cloud_util.gemini_api_util",
+        "description": "es_cloud_util.gemini_api_util",
+        "detail": "es_cloud_util.gemini_api_util",
         "documentation": {}
     },
     {
@@ -215,6 +183,31 @@
         "documentation": {}
     },
     {
+        "label": "SentenceTransformer",
+        "importPath": "sentence_transformers",
+        "description": "sentence_transformers",
+        "isExtraImport": true,
+        "detail": "sentence_transformers",
+        "documentation": {}
+    },
+    {
+        "label": "PCA",
+        "importPath": "sklearn.decomposition",
+        "description": "sklearn.decomposition",
+        "isExtraImport": true,
+        "detail": "sklearn.decomposition",
+        "documentation": {}
+    },
+    {
+        "label": "numpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
+        "documentation": {}
+    },
+    {
         "label": "gen_md5",
         "kind": 2,
         "importPath": "common_util",
@@ -291,7 +284,7 @@
         "kind": 2,
         "importPath": "es_cloud_demo2_file_sentence_transformers",
         "description": "es_cloud_demo2_file_sentence_transformers",
-        "peekOfCode": "def update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):\n        file_path = os.path.join(folder_path, filename)\n        if filename.lower().endswith((\"t.txt\")):\n            es_cloud_util.index_file_chunk_overlap(client, index_name, file_path, dims)\nif __name__ == \"__main__\":\n    update_index_()\n    query_kw = \"appearance\"",
+        "peekOfCode": "def update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):\n        file_path = os.path.join(folder_path, filename)\n        if filename.lower().endswith((\"t.txt\")):\n            # es_cloud_util.index_file_chunk_overlap_sentence_transformers(client, index_name, file_path, dims)\n            es_cloud_util.index_file_chunk_overlap_sentence_transformers(\n                client, index_name, file_path\n            )",
         "detail": "es_cloud_demo2_file_sentence_transformers",
         "documentation": {}
     },
@@ -300,7 +293,7 @@
         "kind": 5,
         "importPath": "es_cloud_demo2_file_sentence_transformers",
         "description": "es_cloud_demo2_file_sentence_transformers",
-        "peekOfCode": "dims = 768\nclient = Elasticsearch(\n    \"https://my-elasticsearch-project-a6634e.es.us-east-1.aws.elastic.cloud:443\",\n    api_key=\"V1BWMEZwZ0I5UE5nM2tDY3pXS0o6cUxkV1ZMYVlxUEZiMEpaZ3N3em9UQQ==\",\n)\nindex_name = \"index_file_chunk_overlap\"\ndef update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):",
+        "peekOfCode": "dims = 768\nclient = Elasticsearch(\n    \"https://my-elasticsearch-project-a6634e.es.us-east-1.aws.elastic.cloud:443\",\n    api_key=\"V1BWMEZwZ0I5UE5nM2tDY3pXS0o6cUxkV1ZMYVlxUEZiMEpaZ3N3em9UQQ==\",\n)\nindex_name = \"index_file_chunk_overlap_sentence_transformers\"\ndef update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):",
         "detail": "es_cloud_demo2_file_sentence_transformers",
         "documentation": {}
     },
@@ -309,7 +302,7 @@
         "kind": 5,
         "importPath": "es_cloud_demo2_file_sentence_transformers",
         "description": "es_cloud_demo2_file_sentence_transformers",
-        "peekOfCode": "client = Elasticsearch(\n    \"https://my-elasticsearch-project-a6634e.es.us-east-1.aws.elastic.cloud:443\",\n    api_key=\"V1BWMEZwZ0I5UE5nM2tDY3pXS0o6cUxkV1ZMYVlxUEZiMEpaZ3N3em9UQQ==\",\n)\nindex_name = \"index_file_chunk_overlap\"\ndef update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):\n        file_path = os.path.join(folder_path, filename)",
+        "peekOfCode": "client = Elasticsearch(\n    \"https://my-elasticsearch-project-a6634e.es.us-east-1.aws.elastic.cloud:443\",\n    api_key=\"V1BWMEZwZ0I5UE5nM2tDY3pXS0o6cUxkV1ZMYVlxUEZiMEpaZ3N3em9UQQ==\",\n)\nindex_name = \"index_file_chunk_overlap_sentence_transformers\"\ndef update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):\n        file_path = os.path.join(folder_path, filename)",
         "detail": "es_cloud_demo2_file_sentence_transformers",
         "documentation": {}
     },
@@ -318,8 +311,17 @@
         "kind": 5,
         "importPath": "es_cloud_demo2_file_sentence_transformers",
         "description": "es_cloud_demo2_file_sentence_transformers",
-        "peekOfCode": "index_name = \"index_file_chunk_overlap\"\ndef update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):\n        file_path = os.path.join(folder_path, filename)\n        if filename.lower().endswith((\"t.txt\")):\n            es_cloud_util.index_file_chunk_overlap(client, index_name, file_path, dims)\nif __name__ == \"__main__\":\n    update_index_()",
+        "peekOfCode": "index_name = \"index_file_chunk_overlap_sentence_transformers\"\ndef update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):\n        file_path = os.path.join(folder_path, filename)\n        if filename.lower().endswith((\"t.txt\")):\n            # es_cloud_util.index_file_chunk_overlap_sentence_transformers(client, index_name, file_path, dims)\n            es_cloud_util.index_file_chunk_overlap_sentence_transformers(\n                client, index_name, file_path",
         "detail": "es_cloud_demo2_file_sentence_transformers",
+        "documentation": {}
+    },
+    {
+        "label": "create_index",
+        "kind": 2,
+        "importPath": "es_cloud_util",
+        "description": "es_cloud_util",
+        "peekOfCode": "def create_index(client, index_name, dims):\n    mapping = {\n        \"mappings\": {\n            \"properties\": {\n                \"vector\": {\"type\": \"dense_vector\", \"dims\": dims, \"similarity\": \"cosine\"},\n            }\n        }\n    }\n    result = client.indices.create(index=index_name, body=mapping)\n    print(result)",
+        "detail": "es_cloud_util",
         "documentation": {}
     },
     {
@@ -327,7 +329,7 @@
         "kind": 2,
         "importPath": "es_cloud_util",
         "description": "es_cloud_util",
-        "peekOfCode": "def update_mapping(client, index_name, dims):\n    mappings = {\n        \"properties\": {\n            \"vector\": {\"type\": \"dense_vector\", \"dims\": dims},\n            \"text\": {\"type\": \"text\"},\n        }\n    }\n    mapping_response = client.indices.put_mapping(index=index_name, body=mappings)\n    print(mapping_response)\ndef update_index(client, docs, index_name):",
+        "peekOfCode": "def update_mapping(client, index_name, dims):\n    mapping = {\n        \"properties\": {\n            \"vector\": {\"type\": \"dense_vector\", \"dims\": dims, \"similarity\": \"cosine\"},\n        }\n    }\n    mapping_response = client.indices.put_mapping(index=index_name, body=mapping)\n    print(mapping_response)\ndef update_index(client, docs, index_name, dims=768,batch_size=32):\n    if not client.indices.exists(index=index_name):",
         "detail": "es_cloud_util",
         "documentation": {}
     },
@@ -336,16 +338,16 @@
         "kind": 2,
         "importPath": "es_cloud_util",
         "description": "es_cloud_util",
-        "peekOfCode": "def update_index(client, docs, index_name):\n    bulk_response = helpers.bulk(client, docs, index=index_name)\n    print(bulk_response)\ndef md5_exit_check(client,index_name,md5):\n    response = client.search(\n        index=index_name,\n        body={\n            \"query\": {\n                \"term\": {\n                    \"md5\": md5",
+        "peekOfCode": "def update_index(client, docs, index_name, dims=768,batch_size=32):\n    if not client.indices.exists(index=index_name):\n        update_mapping(client, index_name, dims)\n    # bulk_response = helpers.bulk(client, docs, index=index_name)\n    for i in range(0, len(docs), batch_size):\n        chunks = docs[i : i + batch_size]\n        print(f\"update_index : Current : {i} to {i + batch_size}\")\n        bulk_response = helpers.bulk(client, chunks, index=index_name)\n        print(bulk_response)\ndef get_property_list(client, index_name, property=\"md5\"):",
         "detail": "es_cloud_util",
         "documentation": {}
     },
     {
-        "label": "md5_exit_check",
+        "label": "get_property_list",
         "kind": 2,
         "importPath": "es_cloud_util",
         "description": "es_cloud_util",
-        "peekOfCode": "def md5_exit_check(client,index_name,md5):\n    response = client.search(\n        index=index_name,\n        body={\n            \"query\": {\n                \"term\": {\n                    \"md5\": md5\n                }\n            }\n        }",
+        "peekOfCode": "def get_property_list(client, index_name, property=\"md5\"):\n    if not client.indices.exists(index=index_name):\n        return []\n    response = client.search(\n        index=index_name,\n        body={\n            \"query\": {\"exists\": {\"field\": \"md5\"}},\n            \"fields\": [property],\n            \"_source\": False,\n            \"size\": 10000,",
         "detail": "es_cloud_util",
         "documentation": {}
     },
@@ -355,6 +357,15 @@
         "importPath": "es_cloud_util",
         "description": "es_cloud_util",
         "peekOfCode": "def index_file_chunk_overlap(client, index_name, file_path, dims, batch_size=100):\n    with open(file_path, \"r\", encoding=\"utf-8\") as f:\n        text = f.read()\n        print(file_path, len(text))\n        chunk_size, overlap = 500, 100\n        # chunk_size, overlap = 50, 10\n        all_chunks = [\n            text[i : i + chunk_size] for i in range(0, len(text), chunk_size - overlap)\n        ]\n        for i in range(0, len(all_chunks), batch_size):",
+        "detail": "es_cloud_util",
+        "documentation": {}
+    },
+    {
+        "label": "index_file_chunk_overlap_sentence_transformers",
+        "kind": 2,
+        "importPath": "es_cloud_util",
+        "description": "es_cloud_util",
+        "peekOfCode": "def index_file_chunk_overlap_sentence_transformers(\n    client, index_name, file_path, dims=0\n):\n    with open(file_path, \"r\", encoding=\"utf-8\") as f:\n        text = f.read()\n        print(file_path, len(text))\n        chunk_size, overlap = 500, 100\n        # chunk_size, overlap = 50, 10\n        chunks = [\n            text[i : i + chunk_size] for i in range(0, len(text), chunk_size - overlap)",
         "detail": "es_cloud_util",
         "documentation": {}
     },
@@ -437,6 +448,33 @@
         "description": "search_ui",
         "peekOfCode": "es = Elasticsearch([\"http://127.0.0.1:9200\"])\n@app.route('/search', methods=['GET'])\ndef search():\n    query = request.args.get('q', '')\n    body = {\n        \"query\": {\n            \"match\": {\n                \"attachment.content\": query\n            }\n        },",
         "detail": "search_ui",
+        "documentation": {}
+    },
+    {
+        "label": "get_embedings",
+        "kind": 2,
+        "importPath": "sentence_transformers_util",
+        "description": "sentence_transformers_util",
+        "peekOfCode": "def get_embedings(\n    texts, dims=0, model_name=\"paraphrase-multilingual-mpnet-base-v2\", batch_size=32\n):\n    model = SentenceTransformer(model_name)\n    result = model.encode(texts, normalize_embeddings=True, batch_size=batch_size)\n    if dims:\n        result = change_dims(result, dims)\n    return result.tolist()\n# def get_one_embeding(text, dims=0, model_name='paraphrase-multilingual-mpnet-base-v2'):\n#     model = SentenceTransformer(model_name)",
+        "detail": "sentence_transformers_util",
+        "documentation": {}
+    },
+    {
+        "label": "change_dims",
+        "kind": 2,
+        "importPath": "sentence_transformers_util",
+        "description": "sentence_transformers_util",
+        "peekOfCode": "def change_dims(embeddings, target_dims):\n    # target_dims = 256\n    pca = PCA(n_components=target_dims)\n    reduced_embeddings = pca.fit_transform(embeddings).tolist()\n    return reduced_embeddings\nif __name__ == \"__main__\":\n    # get_one_embeding('hello world')\n    get_embedings([\"hello world\", \"hello word\"], dims=32)",
+        "detail": "sentence_transformers_util",
+        "documentation": {}
+    },
+    {
+        "label": "os.environ[\"TF_ENABLE_ONEDNN_OPTS\"]",
+        "kind": 5,
+        "importPath": "sentence_transformers_util",
+        "description": "sentence_transformers_util",
+        "peekOfCode": "os.environ[\"TF_ENABLE_ONEDNN_OPTS\"] = \"0\"\nfrom sentence_transformers import SentenceTransformer\nfrom sklearn.decomposition import PCA\nimport numpy as np\ndef get_embedings(\n    texts, dims=0, model_name=\"paraphrase-multilingual-mpnet-base-v2\", batch_size=32\n):\n    model = SentenceTransformer(model_name)\n    result = model.encode(texts, normalize_embeddings=True, batch_size=batch_size)\n    if dims:",
+        "detail": "sentence_transformers_util",
         "documentation": {}
     }
 ]

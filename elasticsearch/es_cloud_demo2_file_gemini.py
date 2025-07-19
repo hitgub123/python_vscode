@@ -1,7 +1,6 @@
 from elasticsearch import Elasticsearch
-from gemini_api_util import get_embedings
 import os
-import es_cloud_util
+import es_cloud_util,gemini_api_util
 
 
 dims = 768
@@ -23,5 +22,5 @@ def update_index_():
 if __name__ == "__main__":
     update_index_()
     query_kw = "appearance"
-    query_embedding = get_embedings(query_kw,dims)[0].values
+    query_embedding = gemini_api_util.get_embedings(query_kw,dims)[0].values
     es_cloud_util.query(client, index_name, query_embedding)
