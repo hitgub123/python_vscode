@@ -17,8 +17,10 @@ def create_index(client, index_name, dims):
 
 def update_mapping(client, index_name, dims):
     mapping = {
-        "properties": {
-            "vector": {"type": "dense_vector", "dims": dims, "similarity": "cosine"},
+        "mappings": {
+            "properties": {
+                "vector": {"type": "dense_vector", "dims": dims, "similarity": "cosine"},
+            }
         }
     }
     mapping_response = client.indices.put_mapping(index=index_name, body=mapping)
@@ -27,7 +29,7 @@ def update_mapping(client, index_name, dims):
 
 def update_index(client, docs, index_name, dims=768,batch_size=32):
     if not client.indices.exists(index=index_name):
-        update_mapping(client, index_name, dims)
+        create_index(client, index_name, dims)
     # bulk_response = helpers.bulk(client, docs, index=index_name)
     for i in range(0, len(docs), batch_size):
         chunks = docs[i : i + batch_size]
@@ -97,7 +99,7 @@ def index_file_chunk_overlap_sentence_transformers(
                 {"text": chunks[i], "vector": vectors[i], "md5": gen_md5(chunks[i])}
                 for i in range(len(chunks))
             ]
-            es_cloud_util.update_index(client, docs, index_name)
+            es_cloud_util.update_index(client, docs, index_name,dims=dims)
 
 
 def query(client, index_name, query_embedding):

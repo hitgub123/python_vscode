@@ -2,7 +2,7 @@ import os
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 from sentence_transformers import SentenceTransformer
 from sklearn.decomposition import PCA
-import numpy as np
+import numpy as np,pickle
 
 
 def get_embedings(
@@ -26,7 +26,10 @@ def get_embedings(
 def change_dims(embeddings, target_dims):
     # target_dims = 256
     pca = PCA(n_components=target_dims)
-    reduced_embeddings = pca.fit_transform(embeddings).tolist()
+    reduced_embeddings = pca.fit_transform(embeddings)
+    # Save PCA model tor translate query embeddings to target_dims
+    with open("model/pca_model.pkl", "wb") as f:
+        pickle.dump(pca, f)
     return reduced_embeddings
 
 
