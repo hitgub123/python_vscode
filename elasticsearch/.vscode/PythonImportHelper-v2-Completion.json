@@ -1,5 +1,47 @@
 [
     {
+        "label": "hashlib",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "hashlib",
+        "description": "hashlib",
+        "detail": "hashlib",
+        "documentation": {}
+    },
+    {
+        "label": "requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests",
+        "description": "requests",
+        "detail": "requests",
+        "documentation": {}
+    },
+    {
+        "label": "Elasticsearch",
+        "importPath": "elasticsearch",
+        "description": "elasticsearch",
+        "isExtraImport": true,
+        "detail": "elasticsearch",
+        "documentation": {}
+    },
+    {
+        "label": "Elasticsearch",
+        "importPath": "elasticsearch",
+        "description": "elasticsearch",
+        "isExtraImport": true,
+        "detail": "elasticsearch",
+        "documentation": {}
+    },
+    {
+        "label": "helpers",
+        "importPath": "elasticsearch",
+        "description": "elasticsearch",
+        "isExtraImport": true,
+        "detail": "elasticsearch",
+        "documentation": {}
+    },
+    {
         "label": "Elasticsearch",
         "importPath": "elasticsearch",
         "description": "elasticsearch",
@@ -40,12 +82,52 @@
         "documentation": {}
     },
     {
-        "label": "base64",
+        "label": "Elasticsearch",
+        "importPath": "elasticsearch",
+        "description": "elasticsearch",
+        "isExtraImport": true,
+        "detail": "elasticsearch",
+        "documentation": {}
+    },
+    {
+        "label": "get_embedings",
+        "importPath": "gemini_api_util",
+        "description": "gemini_api_util",
+        "isExtraImport": true,
+        "detail": "gemini_api_util",
+        "documentation": {}
+    },
+    {
+        "label": "get_embedings",
+        "importPath": "gemini_api_util",
+        "description": "gemini_api_util",
+        "isExtraImport": true,
+        "detail": "gemini_api_util",
+        "documentation": {}
+    },
+    {
+        "label": "get_embedings",
+        "importPath": "gemini_api_util",
+        "description": "gemini_api_util",
+        "isExtraImport": true,
+        "detail": "gemini_api_util",
+        "documentation": {}
+    },
+    {
+        "label": "get_embedings",
+        "importPath": "gemini_api_util",
+        "description": "gemini_api_util",
+        "isExtraImport": true,
+        "detail": "gemini_api_util",
+        "documentation": {}
+    },
+    {
+        "label": "es_cloud_util",
         "kind": 6,
         "isExtraImport": true,
-        "importPath": "base64",
-        "description": "base64",
-        "detail": "base64",
+        "importPath": "es_cloud_util",
+        "description": "es_cloud_util",
+        "detail": "es_cloud_util",
         "documentation": {}
     },
     {
@@ -58,20 +140,20 @@
         "documentation": {}
     },
     {
-        "label": "requests",
+        "label": "es_cloud_util,",
         "kind": 6,
         "isExtraImport": true,
-        "importPath": "requests",
-        "description": "requests",
-        "detail": "requests",
+        "importPath": "es_cloud_util.",
+        "description": "es_cloud_util.",
+        "detail": "es_cloud_util.",
         "documentation": {}
     },
     {
-        "label": "get_embedings",
-        "importPath": "gemini_api_util",
-        "description": "gemini_api_util",
+        "label": "gen_md5",
+        "importPath": "common_util",
+        "description": "common_util",
         "isExtraImport": true,
-        "detail": "gemini_api_util",
+        "detail": "common_util",
         "documentation": {}
     },
     {
@@ -88,6 +170,24 @@
         "description": "google.genai",
         "isExtraImport": true,
         "detail": "google.genai",
+        "documentation": {}
+    },
+    {
+        "label": "os,",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os.",
+        "description": "os.",
+        "detail": "os.",
+        "documentation": {}
+    },
+    {
+        "label": "base64",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "base64",
+        "description": "base64",
+        "detail": "base64",
         "documentation": {}
     },
     {
@@ -115,30 +215,12 @@
         "documentation": {}
     },
     {
-        "label": "index_file",
+        "label": "gen_md5",
         "kind": 2,
-        "importPath": "create_index",
-        "description": "create_index",
-        "peekOfCode": "def index_file(file_path, index_name=\"test-index1\"):\n    try:\n        with open(file_path, \"rb\") as f:\n            content = base64.b64encode(f.read()).decode(\"utf-8\")\n        doc = {\n            \"name\": os.path.basename(file_path),\n            \"type\": os.path.splitext(file_path)[1][1:].lower(),\n            \"content\": content\n        }\n        # 索引文件，使用 test1 管道",
-        "detail": "create_index",
-        "documentation": {}
-    },
-    {
-        "label": "es",
-        "kind": 5,
-        "importPath": "create_index",
-        "description": "create_index",
-        "peekOfCode": "es = Elasticsearch(\n    [\"https://127.0.0.1:9200\"],\n    http_auth=(\"elastic\", \"AVz2_EK*zDFKJnnem3fi\"),\n    ca_certs=\"D:/tools/elasticsearch-9.0.3/config/certs/http_ca.crt\",\n)\ndef index_file(file_path, index_name=\"test-index1\"):\n    try:\n        with open(file_path, \"rb\") as f:\n            content = base64.b64encode(f.read()).decode(\"utf-8\")\n        doc = {",
-        "detail": "create_index",
-        "documentation": {}
-    },
-    {
-        "label": "folder_path",
-        "kind": 5,
-        "importPath": "create_index",
-        "description": "create_index",
-        "peekOfCode": "folder_path = \"./doc\"  # 替换为你的文件目录\nfor filename in os.listdir(folder_path):\n    file_path = os.path.join(folder_path, filename)\n    if filename.lower().endswith(('.pdf', '.doc', '.docx', '.xls', '.xlsx','txt','ppt')):\n        index_file(file_path)",
-        "detail": "create_index",
+        "importPath": "common_util",
+        "description": "common_util",
+        "peekOfCode": "def gen_md5(text):\n    hash_value = hashlib.md5(text.encode('utf-8')).hexdigest()\n    return hash_value",
+        "detail": "common_util",
         "documentation": {}
     },
     {
@@ -169,30 +251,120 @@
         "documentation": {}
     },
     {
+        "label": "update_index_",
+        "kind": 2,
+        "importPath": "es_cloud_demo2_file_gemini",
+        "description": "es_cloud_demo2_file_gemini",
+        "peekOfCode": "def update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):\n        file_path = os.path.join(folder_path, filename)\n        if filename.lower().endswith((\"t.txt\")):\n            es_cloud_util.index_file_chunk_overlap(client, index_name, file_path, dims)\nif __name__ == \"__main__\":\n    update_index_()\n    query_kw = \"appearance\"",
+        "detail": "es_cloud_demo2_file_gemini",
+        "documentation": {}
+    },
+    {
+        "label": "dims",
+        "kind": 5,
+        "importPath": "es_cloud_demo2_file_gemini",
+        "description": "es_cloud_demo2_file_gemini",
+        "peekOfCode": "dims = 768\nclient = Elasticsearch(\n    \"https://my-elasticsearch-project-a6634e.es.us-east-1.aws.elastic.cloud:443\",\n    api_key=\"V1BWMEZwZ0I5UE5nM2tDY3pXS0o6cUxkV1ZMYVlxUEZiMEpaZ3N3em9UQQ==\",\n)\nindex_name = \"index_file_chunk_overlap\"\ndef update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):",
+        "detail": "es_cloud_demo2_file_gemini",
+        "documentation": {}
+    },
+    {
+        "label": "client",
+        "kind": 5,
+        "importPath": "es_cloud_demo2_file_gemini",
+        "description": "es_cloud_demo2_file_gemini",
+        "peekOfCode": "client = Elasticsearch(\n    \"https://my-elasticsearch-project-a6634e.es.us-east-1.aws.elastic.cloud:443\",\n    api_key=\"V1BWMEZwZ0I5UE5nM2tDY3pXS0o6cUxkV1ZMYVlxUEZiMEpaZ3N3em9UQQ==\",\n)\nindex_name = \"index_file_chunk_overlap\"\ndef update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):\n        file_path = os.path.join(folder_path, filename)",
+        "detail": "es_cloud_demo2_file_gemini",
+        "documentation": {}
+    },
+    {
+        "label": "index_name",
+        "kind": 5,
+        "importPath": "es_cloud_demo2_file_gemini",
+        "description": "es_cloud_demo2_file_gemini",
+        "peekOfCode": "index_name = \"index_file_chunk_overlap\"\ndef update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):\n        file_path = os.path.join(folder_path, filename)\n        if filename.lower().endswith((\"t.txt\")):\n            es_cloud_util.index_file_chunk_overlap(client, index_name, file_path, dims)\nif __name__ == \"__main__\":\n    update_index_()",
+        "detail": "es_cloud_demo2_file_gemini",
+        "documentation": {}
+    },
+    {
+        "label": "update_index_",
+        "kind": 2,
+        "importPath": "es_cloud_demo2_file_sentence_transformers",
+        "description": "es_cloud_demo2_file_sentence_transformers",
+        "peekOfCode": "def update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):\n        file_path = os.path.join(folder_path, filename)\n        if filename.lower().endswith((\"t.txt\")):\n            es_cloud_util.index_file_chunk_overlap(client, index_name, file_path, dims)\nif __name__ == \"__main__\":\n    update_index_()\n    query_kw = \"appearance\"",
+        "detail": "es_cloud_demo2_file_sentence_transformers",
+        "documentation": {}
+    },
+    {
+        "label": "dims",
+        "kind": 5,
+        "importPath": "es_cloud_demo2_file_sentence_transformers",
+        "description": "es_cloud_demo2_file_sentence_transformers",
+        "peekOfCode": "dims = 768\nclient = Elasticsearch(\n    \"https://my-elasticsearch-project-a6634e.es.us-east-1.aws.elastic.cloud:443\",\n    api_key=\"V1BWMEZwZ0I5UE5nM2tDY3pXS0o6cUxkV1ZMYVlxUEZiMEpaZ3N3em9UQQ==\",\n)\nindex_name = \"index_file_chunk_overlap\"\ndef update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):",
+        "detail": "es_cloud_demo2_file_sentence_transformers",
+        "documentation": {}
+    },
+    {
+        "label": "client",
+        "kind": 5,
+        "importPath": "es_cloud_demo2_file_sentence_transformers",
+        "description": "es_cloud_demo2_file_sentence_transformers",
+        "peekOfCode": "client = Elasticsearch(\n    \"https://my-elasticsearch-project-a6634e.es.us-east-1.aws.elastic.cloud:443\",\n    api_key=\"V1BWMEZwZ0I5UE5nM2tDY3pXS0o6cUxkV1ZMYVlxUEZiMEpaZ3N3em9UQQ==\",\n)\nindex_name = \"index_file_chunk_overlap\"\ndef update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):\n        file_path = os.path.join(folder_path, filename)",
+        "detail": "es_cloud_demo2_file_sentence_transformers",
+        "documentation": {}
+    },
+    {
+        "label": "index_name",
+        "kind": 5,
+        "importPath": "es_cloud_demo2_file_sentence_transformers",
+        "description": "es_cloud_demo2_file_sentence_transformers",
+        "peekOfCode": "index_name = \"index_file_chunk_overlap\"\ndef update_index_():\n    # 批量索引文件夹中的文件\n    folder_path = \"./doc\"  # 替换为你的文件目录\n    for filename in os.listdir(folder_path):\n        file_path = os.path.join(folder_path, filename)\n        if filename.lower().endswith((\"t.txt\")):\n            es_cloud_util.index_file_chunk_overlap(client, index_name, file_path, dims)\nif __name__ == \"__main__\":\n    update_index_()",
+        "detail": "es_cloud_demo2_file_sentence_transformers",
+        "documentation": {}
+    },
+    {
         "label": "update_mapping",
         "kind": 2,
-        "importPath": "es_cloud_demo",
-        "description": "es_cloud_demo",
-        "peekOfCode": "def update_mapping(client, index_name,dims):\n    mappings = {\n        \"properties\": {\n            \"vector\": {\"type\": \"dense_vector\", \"dims\": dims},\n            \"text\": {\"type\": \"text\"},\n        }\n    }\n    mapping_response = client.indices.put_mapping(index=index_name, body=mappings)\n    print(mapping_response)\ndef update_index(client,docs, index_name):",
-        "detail": "es_cloud_demo",
+        "importPath": "es_cloud_util",
+        "description": "es_cloud_util",
+        "peekOfCode": "def update_mapping(client, index_name, dims):\n    mappings = {\n        \"properties\": {\n            \"vector\": {\"type\": \"dense_vector\", \"dims\": dims},\n            \"text\": {\"type\": \"text\"},\n        }\n    }\n    mapping_response = client.indices.put_mapping(index=index_name, body=mappings)\n    print(mapping_response)\ndef update_index(client, docs, index_name):",
+        "detail": "es_cloud_util",
         "documentation": {}
     },
     {
         "label": "update_index",
         "kind": 2,
-        "importPath": "es_cloud_demo",
-        "description": "es_cloud_demo",
-        "peekOfCode": "def update_index(client,docs, index_name):\n    bulk_response = helpers.bulk(client, docs, index=index_name)\n    print(bulk_response)\ndef query(client, query_embedding):\n    body = {\n        \"query\": {\n            \"script_score\": {\n                \"query\": {\"match_all\": {}},\n                \"script\": {\n                    \"source\": \"cosineSimilarity(params.query_vector, 'vector') + 1.0\",",
-        "detail": "es_cloud_demo",
+        "importPath": "es_cloud_util",
+        "description": "es_cloud_util",
+        "peekOfCode": "def update_index(client, docs, index_name):\n    bulk_response = helpers.bulk(client, docs, index=index_name)\n    print(bulk_response)\ndef md5_exit_check(client,index_name,md5):\n    response = client.search(\n        index=index_name,\n        body={\n            \"query\": {\n                \"term\": {\n                    \"md5\": md5",
+        "detail": "es_cloud_util",
+        "documentation": {}
+    },
+    {
+        "label": "md5_exit_check",
+        "kind": 2,
+        "importPath": "es_cloud_util",
+        "description": "es_cloud_util",
+        "peekOfCode": "def md5_exit_check(client,index_name,md5):\n    response = client.search(\n        index=index_name,\n        body={\n            \"query\": {\n                \"term\": {\n                    \"md5\": md5\n                }\n            }\n        }",
+        "detail": "es_cloud_util",
+        "documentation": {}
+    },
+    {
+        "label": "index_file_chunk_overlap",
+        "kind": 2,
+        "importPath": "es_cloud_util",
+        "description": "es_cloud_util",
+        "peekOfCode": "def index_file_chunk_overlap(client, index_name, file_path, dims, batch_size=100):\n    with open(file_path, \"r\", encoding=\"utf-8\") as f:\n        text = f.read()\n        print(file_path, len(text))\n        chunk_size, overlap = 500, 100\n        # chunk_size, overlap = 50, 10\n        all_chunks = [\n            text[i : i + chunk_size] for i in range(0, len(text), chunk_size - overlap)\n        ]\n        for i in range(0, len(all_chunks), batch_size):",
+        "detail": "es_cloud_util",
         "documentation": {}
     },
     {
         "label": "query",
         "kind": 2,
-        "importPath": "es_cloud_demo",
-        "description": "es_cloud_demo",
-        "peekOfCode": "def query(client, query_embedding):\n    body = {\n        \"query\": {\n            \"script_score\": {\n                \"query\": {\"match_all\": {}},\n                \"script\": {\n                    \"source\": \"cosineSimilarity(params.query_vector, 'vector') + 1.0\",\n                    \"params\": {\"query_vector\": query_embedding},\n                },\n            }",
-        "detail": "es_cloud_demo",
+        "importPath": "es_cloud_util",
+        "description": "es_cloud_util",
+        "peekOfCode": "def query(client, index_name, query_embedding):\n    body = {\n        \"size\": 3,\n        \"query\": {\n            \"script_score\": {\n                \"query\": {\"match_all\": {}},\n                \"script\": {\n                    \"source\": \"cosineSimilarity(params.query_vector, 'vector') + 1.0\",\n                    \"params\": {\"query_vector\": query_embedding},\n                },",
+        "detail": "es_cloud_util",
         "documentation": {}
     },
     {
@@ -200,7 +372,7 @@
         "kind": 2,
         "importPath": "gemini_api_util",
         "description": "gemini_api_util",
-        "peekOfCode": "def get_ai_client():\n    api_key = os.environ.get(\"ceria_gemini_api_key\")\n    client = genai.Client(api_key=api_key)\n    return client\ndef get_embedings(text, dims, model=\"gemini-embedding-001\"):\n    # text = \"Yellowstone National Park\"\n    # 生成嵌入（截断到 3 维以匹配你的索引）\n    result = get_ai_client().models.embed_content(\n        model=model,\n        contents=text,",
+        "peekOfCode": "def get_ai_client():\n    api_key = os.environ.get(\"gemini_api_key2\")\n    client = genai.Client(api_key=api_key)\n    return client\ndef get_embedings(texts, dims, model=\"gemini-embedding-001\", batch_size=100):\n    embeddings = []\n    client = get_ai_client()\n    for i in range(0, len(texts), batch_size):\n        batch = texts[i : i + batch_size]  # 每批最多 100 个\n        try:",
         "detail": "gemini_api_util",
         "documentation": {}
     },
@@ -209,8 +381,35 @@
         "kind": 2,
         "importPath": "gemini_api_util",
         "description": "gemini_api_util",
-        "peekOfCode": "def get_embedings(text, dims, model=\"gemini-embedding-001\"):\n    # text = \"Yellowstone National Park\"\n    # 生成嵌入（截断到 3 维以匹配你的索引）\n    result = get_ai_client().models.embed_content(\n        model=model,\n        contents=text,\n        config=types.EmbedContentConfig(output_dimensionality=dims),\n    )\n    emb=result.embeddings\n    # print(emb)  # 示例输出: [0.123, -0.456, 0.789]",
+        "peekOfCode": "def get_embedings(texts, dims, model=\"gemini-embedding-001\", batch_size=100):\n    embeddings = []\n    client = get_ai_client()\n    for i in range(0, len(texts), batch_size):\n        batch = texts[i : i + batch_size]  # 每批最多 100 个\n        try:\n            result = client.models.embed_content(\n                model=model,\n                contents=batch,\n                config=types.EmbedContentConfig(output_dimensionality=dims),",
         "detail": "gemini_api_util",
+        "documentation": {}
+    },
+    {
+        "label": "index_file",
+        "kind": 2,
+        "importPath": "localES_create_index",
+        "description": "localES_create_index",
+        "peekOfCode": "def index_file(file_path, index_name):\n    try:\n        with open(file_path, \"rb\") as f:\n            content = base64.b64encode(f.read()).decode(\"utf-8\")\n        doc = {\n            \"name\": os.path.basename(file_path),\n            \"type\": os.path.splitext(file_path)[1][1:].lower(),\n            \"content\": content\n        }\n        # 索引文件，使用 test1 管道",
+        "detail": "localES_create_index",
+        "documentation": {}
+    },
+    {
+        "label": "es",
+        "kind": 5,
+        "importPath": "localES_create_index",
+        "description": "localES_create_index",
+        "peekOfCode": "es = Elasticsearch(\n    [\"https://127.0.0.1:9200\"],\n    http_auth=(\"elastic\", \"AVz2_EK*zDFKJnnem3fi\"),\n    ca_certs=\"D:/tools/elasticsearch-9.0.3/config/certs/http_ca.crt\",\n)\nindex_name=\"test-index1\"\ndef index_file(file_path, index_name):\n    try:\n        with open(file_path, \"rb\") as f:\n            content = base64.b64encode(f.read()).decode(\"utf-8\")",
+        "detail": "localES_create_index",
+        "documentation": {}
+    },
+    {
+        "label": "folder_path",
+        "kind": 5,
+        "importPath": "localES_create_index",
+        "description": "localES_create_index",
+        "peekOfCode": "folder_path = \"./doc\"  # 替换为你的文件目录\nfor filename in os.listdir(folder_path):\n    file_path = os.path.join(folder_path, filename)\n    if filename.lower().endswith(('.pdf', '.doc', '.docx', '.xls', '.xlsx','txt','ppt')):\n        index_file(file_path,index_name)",
+        "detail": "localES_create_index",
         "documentation": {}
     },
     {

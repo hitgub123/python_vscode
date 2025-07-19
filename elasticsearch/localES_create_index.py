@@ -8,8 +8,9 @@ es = Elasticsearch(
     http_auth=("elastic", "AVz2_EK*zDFKJnnem3fi"),
     ca_certs="D:/tools/elasticsearch-9.0.3/config/certs/http_ca.crt",
 )
+index_name="test-index1"
 
-def index_file(file_path, index_name="test-index1"):
+def index_file(file_path, index_name):
     try:
         with open(file_path, "rb") as f:
             content = base64.b64encode(f.read()).decode("utf-8")
@@ -29,4 +30,4 @@ folder_path = "./doc"  # 替换为你的文件目录
 for filename in os.listdir(folder_path):
     file_path = os.path.join(folder_path, filename)
     if filename.lower().endswith(('.pdf', '.doc', '.docx', '.xls', '.xlsx','txt','ppt')):
-        index_file(file_path)
+        index_file(file_path,index_name)
