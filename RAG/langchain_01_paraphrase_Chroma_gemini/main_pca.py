@@ -1,31 +1,32 @@
 import os, sys
 
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from sentence_transformers import SentenceTransformer
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "rag_util"))
 )
-import common_util, account, vector_store_Qdrant
+import common_util, vector_store_Chroma_PCA, model_util
 
 
-def create_custom_embeddings(model_name, model):
+def create_custom_embeddings(model_name, model, pca):
     class CustomEmbeddings(HuggingFaceEmbeddings):
         def embed_documents(self, texts):
             embeddings_768d = model.encode(
                 texts, batch_size=32, normalize_embeddings=True
             )
+            if pca:
+                return pca.transform(embeddings_768d).tolist()
             return embeddings_768d.tolist()
 
         def embed_query(self, text):
             embedding_768d = model.encode([text], normalize_embeddings=True)[0]
+            if pca:
+                return pca.transform([embedding_768d]).tolist()[0]
             return embedding_768d.tolist()
 
-    return CustomEmbeddings(
-        model_name=model_name, model_kwargs={"device": "cpu", "trust_remote_code": True}
-    )
+    return CustomEmbeddings(model_name=model_name)
 
 
 def create_rag_chain(vector_store, embedding_function):
@@ -34,27 +35,34 @@ def create_rag_chain(vector_store, embedding_function):
     from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 
     def print_context_and_score(x):
-        docs = x["docs"]
+        """
+        Print individual documents, their scores, question, and combined context score.
+        """
+        docs = x["docs"]  # List of Document objects
         query = x["question"]
-        context = "\n".join(doc.page_content for doc in docs)
-        doc_scores = common_util.score_context(query, docs, embedding_function)
-        context_score = common_util.score_context(query, context, embedding_function)
+        context = "\n".join(doc.page_content for doc in docs)  # Combined context
+        doc_scores = common_util.score_context(
+            query, docs, embedding_function
+        )  # Individual scores
+        context_score = common_util.score_context(
+            query, context, embedding_function
+        )  # Combined score
 
         print("Question:", query)
         print("Individual Documents and Scores:")
         for i, (doc, score) in enumerate(zip(docs, doc_scores)):
-            print(
-                ">" * 40,
-                f"\nDoc {i+1} (Score: {score:.3f}):\n{doc.page_content[:1000]}",
-            )
+            print(f"Doc {i+1} (Score: {score:.3f}):\n{doc.page_content[:1000]}")
+        # print("Combined Context:\n", context)
         print(f"Context Score: {context_score:.3f}")
-        return {"context": context, "question": query}
+        return {"context": context, "question": query}  # Return dict for prompt
 
+    # Initialize LLM (replace with your API key)
     google_api_key = os.environ.get("gemini_api_key2")
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash", google_api_key=google_api_key, temperature=0
     )
 
+    # Define RAG prompt
     prompt = ChatPromptTemplate.from_template(
         """You are an assistant for question-answering tasks. Use the following context to answer the question. If you don't know the answer, say so.
         Question: {question}
@@ -62,11 +70,22 @@ def create_rag_chain(vector_store, embedding_function):
         Answer:"""
     )
 
+    # Create retriever
     retriever = vector_store.as_retriever(search_kwargs={"k": 5})
 
+    # Build RAG chain
+    # rag_chain = (
+    #     {
+    #         "context": retriever
+    #         | (lambda docs: "\n".join(doc.page_content for doc in docs)),
+    #         "question": RunnablePassthrough(),
+    #     }
+    #     | prompt
+    #     | llm
+    # )
     rag_chain = (
         {
-            "docs": retriever,
+            "docs": retriever,  # Pass raw Document list
             "question": RunnablePassthrough(),
         }
         | RunnableLambda(print_context_and_score)
@@ -77,37 +96,47 @@ def create_rag_chain(vector_store, embedding_function):
 
 
 if __name__ == "__main__":
-    qdrant_url = account.QDRANT_URL
-    qdrant_api_key = account.QDRANT_API_KEY
-    collection_name = "rag_collection_without_ollama"
-    embedding_model_name = "nomic-ai/nomic-embed-text-v1"
-    
-    embedings_model=SentenceTransformer(embedding_model_name, trust_remote_code=True),
-    embedings_model=embedings_model[0]
+    collection_name = "rag_collection"
+    embedding_model_name = "paraphrase-multilingual-mpnet-base-v2"
+    embedings_model = model_util.get_embedding(
+        model_name=embedding_model_name, model_source="sbert"
+    )
     texts_path = (
         "doc/Odd John_ A Story Between Jest and Earnest.txt",
         "doc/Pandora.txt",
+        # "doc/Odd John_ A Story Between Jest and Earnest-chinese.txt",
     )
+    current_file_path = os.path.abspath(__file__)
+    current_dir = os.path.dirname(current_file_path)
+
+    pca_model_path = None
+    pca_model_path = os.path.join(current_dir, "model/pca_model.pkl")
+
+    persist_directory = os.path.join(current_dir, "db/chroma_db_1_pca")
+    if pca_model_path:
+        persist_directory = persist_directory + "_with_PCA"
+    target_dims = 128
 
     query_mode = 0
     if query_mode:
-        vector_store, embedding_function = vector_store_Qdrant.get_vector_store(
+        vector_store, embedding_function = vector_store_Chroma_PCA.get_vector_store(
             collection_name=collection_name,
             embedding_model_name=embedding_model_name,
+            persist_directory=persist_directory,
             create_custom_embeddings=create_custom_embeddings,
             embedings_model=embedings_model,
-            qdrant_url=qdrant_url,
-            qdrant_api_key=qdrant_api_key,
+            pca_model_path=pca_model_path,
         )
     else:
-        vector_store, embedding_function = vector_store_Qdrant.create_vector_store(
+        vector_store, embedding_function = vector_store_Chroma_PCA.create_vector_store(
             collection_name=collection_name,
             embedding_model_name=embedding_model_name,
             texts_path=texts_path,
+            pca_model_path=pca_model_path,
+            persist_directory=persist_directory,
+            target_dims=target_dims,
             create_custom_embeddings=create_custom_embeddings,
             embedings_model=embedings_model,
-            qdrant_url=qdrant_url,
-            qdrant_api_key=qdrant_api_key,
         )
 
     rag_chain = create_rag_chain(vector_store, embedding_function)
@@ -119,5 +148,7 @@ if __name__ == "__main__":
             break
         else:
             common_util.print_search_score(vector_store, query)
+            retriever = vector_store.as_retriever(search_kwargs={"k": 5})
+
             response = rag_chain.invoke(query)
             print(response.content)

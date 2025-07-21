@@ -1,33 +1,25 @@
 import os, sys
 
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.embeddings import HuggingFaceEmbeddings
+from sentence_transformers import SentenceTransformer
+from langchain_community.llms import Ollama
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "rag_util"))
 )
-import common_util, vector_store_Chroma, model_util
+import common_util, model_util
+import vector_store_Chroma_new
 
 
-def create_custom_embeddings(model_name, model):
-    class CustomEmbeddings(HuggingFaceEmbeddings):
-        def embed_documents(self, texts):
-            embeddings_768d = model.encode(
-                texts, batch_size=32, normalize_embeddings=True
-            )
-            return embeddings_768d.tolist()
-
-        def embed_query(self, text):
-            embedding_768d = model.encode([text], normalize_embeddings=True)[0]
-            return embedding_768d.tolist()
-
-    return CustomEmbeddings(model_name=model_name)
+OLLAMA_URL = "http://localhost:11434"
 
 
 def create_rag_chain(vector_store, embedding_function):
     from langchain_core.prompts import ChatPromptTemplate
-    from langchain_google_genai import ChatGoogleGenerativeAI
     from langchain_core.runnables import RunnablePassthrough, RunnableLambda
+    from transformers import AutoTokenizer, AutoModelForCausalLM
 
     def print_context_and_score(x):
         """
@@ -47,15 +39,13 @@ def create_rag_chain(vector_store, embedding_function):
         print("Individual Documents and Scores:")
         for i, (doc, score) in enumerate(zip(docs, doc_scores)):
             print(f"Doc {i+1} (Score: {score:.3f}):\n{doc.page_content[:1000]}")
-        # print("Combined Context:\n", context)
         print(f"Context Score: {context_score:.3f}")
-        return {"context": context, "question": query}  # Return dict for prompt
+        return {"context": context, "question": query}
 
     # Initialize LLM (replace with your API key)
-    google_api_key = os.environ.get("gemini_api_key2")
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash", google_api_key=google_api_key, temperature=0
-    )
+    # llm = Ollama(model="llama3.2", base_url=OLLAMA_URL, temperature=0)
+    tokenizer = AutoTokenizer.from_pretrained("HuggingFaceTB/SmolLM3-3B")
+    llm = AutoModelForCausalLM.from_pretrained("HuggingFaceTB/SmolLM3-3B")
 
     # Define RAG prompt
     prompt = ChatPromptTemplate.from_template(
@@ -68,16 +58,6 @@ def create_rag_chain(vector_store, embedding_function):
     # Create retriever
     retriever = vector_store.as_retriever(search_kwargs={"k": 5})
 
-    # Build RAG chain
-    # rag_chain = (
-    #     {
-    #         "context": retriever
-    #         | (lambda docs: "\n".join(doc.page_content for doc in docs)),
-    #         "question": RunnablePassthrough(),
-    #     }
-    #     | prompt
-    #     | llm
-    # )
     rag_chain = (
         {
             "docs": retriever,  # Pass raw Document list
@@ -91,11 +71,17 @@ def create_rag_chain(vector_store, embedding_function):
 
 
 if __name__ == "__main__":
+    # Use a pipeline as a high-level helper
+    # Load model directly
+
     collection_name = "rag_collection"
-    embedding_model_name = "paraphrase-multilingual-mpnet-base-v2"
-    # embedings_model = SentenceTransformer(embedding_model_name)
-    embedings_model = model_util.get_embedding(
-        model_name=embedding_model_name, model_source="sbert"
+    embedding_model_name = "nomic-embed-text"
+    # embedding_model_name = "bge-m3"
+    # embedding = SentenceTransformer(embedding_model_name)
+    embedding = HuggingFaceEmbeddings(
+        model_name="nomic-ai/nomic-embed-text-v1.5",
+        model_kwargs={"device": "cpu", "trust_remote_code": True},
+        encode_kwargs={"normalize_embeddings": True},
     )
     texts_path = (
         "doc/Odd John_ A Story Between Jest and Earnest.txt",
@@ -109,24 +95,22 @@ if __name__ == "__main__":
 
     query_mode = 0
     if query_mode:
-        vector_store, embedding_function = vector_store_Chroma.get_vector_store(
+        vector_store = vector_store_Chroma_new.get_vector_store(
             collection_name=collection_name,
-            embedding_model_name=embedding_model_name,
+            embedding=embedding,
             persist_directory=persist_directory,
-            create_custom_embeddings=create_custom_embeddings,
-            embedings_model=embedings_model,
         )
     else:
-        vector_store, embedding_function = vector_store_Chroma.create_vector_store(
+        vector_store = vector_store_Chroma_new.create_vector_store(
             collection_name=collection_name,
-            embedding_model_name=embedding_model_name,
+            embedding=embedding,
             texts_path=texts_path,
             persist_directory=persist_directory,
-            create_custom_embeddings=create_custom_embeddings,
-            embedings_model=embedings_model,
         )
 
-    rag_chain = create_rag_chain(vector_store, embedding_function)
+    rag_chain = create_rag_chain(vector_store, embedding)
+
+    # open_webui_util.run_api(rag_chain, vector_store)
 
     while True:
         query = input("Please enter query (type 'q' to quit): ")
@@ -138,4 +122,4 @@ if __name__ == "__main__":
             retriever = vector_store.as_retriever(search_kwargs={"k": 5})
 
             response = rag_chain.invoke(query)
-            print(response.content)
+            print(response)
