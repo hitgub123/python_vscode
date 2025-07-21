@@ -1,17 +1,13 @@
 import os, sys
 
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-import pickle, numpy as np
-
-# from langchain_community.vectorstores import Chroma
-from langchain_chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from sentence_transformers import SentenceTransformer
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "rag_util"))
 )
-import common_util
+import common_util,vector_store_Chroma
 
 
 def create_custom_embeddings(model_name, model, pca):
@@ -33,128 +29,7 @@ def create_custom_embeddings(model_name, model, pca):
     return CustomEmbeddings(model_name=model_name)
 
 
-def get_PCA(pca_model_path):
 
-    with open(pca_model_path, "rb") as f:
-        pca = pickle.load(f)
-    return pca
-
-
-def update_PCA(pca_model_path, embedings_model, texts, target_dims):
-    from sklearn.decomposition import PCA
-
-    # Generate 768D embeddings
-    embeddings_768d = embedings_model.encode(
-        texts, batch_size=32, normalize_embeddings=True
-    )
-
-    # Train PCA (128 dimensions)
-    pca = PCA(n_components=target_dims)
-    _ = pca.fit_transform(embeddings_768d)
-
-    # Save PCA model
-    with open(pca_model_path, "wb") as f:
-        pickle.dump(pca, f)
-
-    return pca
-
-
-def get_embedding_function(embedding_model_name, pca):
-    # Initialize sentence-transformers model
-    embedding_function = create_custom_embeddings(
-        model_name=embedding_model_name,
-        model=SentenceTransformer(embedding_model_name),
-        pca=pca,
-    )
-    return embedding_function
-
-
-def create_vector_store(
-    collection_name,
-    embedding_model_name,
-    texts_path,
-    pca_model_path,
-    vector_db_path,
-    target_dims,
-):
-    from langchain_core.documents import Document
-
-    texts = common_util.get_chunks_from_file(texts_path, chunk_size=600, overlap=100)
-
-    # Prepare documents for Chroma
-    documents = [
-        Document(page_content=texts[i], metadata={"id": common_util.gen_md5(texts[i])})
-        for i in range(len(texts))
-    ]
-
-    pca = None
-    if pca_model_path:
-        pca = update_PCA(
-            pca_model_path=pca_model_path,
-            embedings_model=SentenceTransformer(embedding_model_name),
-            texts=texts,
-            target_dims=target_dims,
-        )
-
-    embedding_function = get_embedding_function(embedding_model_name, pca)
-
-    # Create Chroma vector store
-    vector_store = Chroma.from_documents(
-        documents=documents,
-        embedding=embedding_function,
-        collection_name=collection_name,
-        persist_directory=vector_db_path,
-    )
-    return vector_store, embedding_function
-
-
-def get_vector_store(
-    collection_name, embedding_model_name, persist_directory, pca_model_path
-):
-    pca = None
-    if pca_model_path:
-        pca = get_PCA(pca_model_path)
-    embedding_function = get_embedding_function(embedding_model_name, pca)
-    vector_store = Chroma(
-        collection_name=collection_name,
-        embedding_function=embedding_function,
-        persist_directory=persist_directory,
-    )
-    return vector_store, embedding_function
-
-
-def print_context(x):
-    print(x)
-    return x
-
-
-def cosine_distance(vec1, vec2):
-    """
-    Calculate cosine distance between two vectors.
-    """
-    vec1 = np.array(vec1)
-    vec2 = np.array(vec2)
-    cosine_similarity = np.dot(vec1, vec2) / (
-        np.linalg.norm(vec1) * np.linalg.norm(vec2)
-    )
-    return 1 - cosine_similarity
-
-
-def score_context(query, context, embedding_function):
-    """
-    Calculate cosine distance between query and context (or individual docs).
-    """
-    if isinstance(context, list):  # Handle list of documents
-        scores = []
-        for doc in context:
-            doc_embedding = embedding_function.embed_query(doc.page_content)
-            query_embedding = embedding_function.embed_query(query)
-            scores.append(cosine_distance(query_embedding, doc_embedding))
-        return scores
-    else:  # Handle single string context
-        query_embedding = embedding_function.embed_query(query)
-        context_embedding = embedding_function.embed_query(context)
-        return cosine_distance(query_embedding, context_embedding)
 
 
 def create_rag_chain(vector_store, embedding_function):
@@ -169,8 +44,10 @@ def create_rag_chain(vector_store, embedding_function):
         docs = x["docs"]  # List of Document objects
         query = x["question"]
         context = "\n".join(doc.page_content for doc in docs)  # Combined context
-        doc_scores = score_context(query, docs, embedding_function)  # Individual scores
-        context_score = score_context(
+        doc_scores = common_util.score_context(
+            query, docs, embedding_function
+        )  # Individual scores
+        context_score = common_util.score_context(
             query, context, embedding_function
         )  # Combined score
 
@@ -224,6 +101,7 @@ def create_rag_chain(vector_store, embedding_function):
 if __name__ == "__main__":
     collection_name = "rag_collection"
     embedding_model_name = "paraphrase-multilingual-mpnet-base-v2"
+    embedings_model=SentenceTransformer(embedding_model_name)
     texts_path = (
         "doc/Odd John_ A Story Between Jest and Earnest.txt",
         "doc/Pandora.txt",
@@ -231,29 +109,35 @@ if __name__ == "__main__":
     )
     current_file_path = os.path.abspath(__file__)
     current_dir = os.path.dirname(current_file_path)
+
     pca_model_path = None
-    # pca_model_path = os.path.join(current_dir, "model/pca_model.pkl")
+    pca_model_path = os.path.join(current_dir, "model/pca_model.pkl")
+    
     vector_db_path = os.path.join(current_dir, "db/chroma_db_1")
     if pca_model_path:
         vector_db_path = vector_db_path + "_with_PCA"
     target_dims = 128
 
-    query_mode = 0
+    query_mode = 1
     if query_mode:
-        vector_store, embedding_function = get_vector_store(
+        vector_store, embedding_function = vector_store_Chroma.get_vector_store(
             collection_name=collection_name,
             embedding_model_name=embedding_model_name,
             persist_directory=vector_db_path,
+            create_custom_embeddings=create_custom_embeddings,
+            embedings_model=embedings_model,
             pca_model_path=pca_model_path,
         )
     else:
-        vector_store, embedding_function = create_vector_store(
+        vector_store, embedding_function = vector_store_Chroma.create_vector_store(
             collection_name=collection_name,
             embedding_model_name=embedding_model_name,
             texts_path=texts_path,
             pca_model_path=pca_model_path,
             vector_db_path=vector_db_path,
             target_dims=target_dims,
+            create_custom_embeddings=create_custom_embeddings,
+            embedings_model=embedings_model,            
         )
 
     rag_chain = create_rag_chain(vector_store, embedding_function)
@@ -264,17 +148,7 @@ if __name__ == "__main__":
             print("Exiting the program.")
             break
         else:
-            # query = "What is the name of the ship owner's daughter?"
-            # query = "What happend to boat"
-            # query = "who is the child of the ship owner?"
-            # query = "who is the child of the boatman?"
-            # query = "what did john do when he was 23?"
-            # query = "船主的女儿的名字是什么?"
-
-            # results = vector_store.similarity_search_with_score(query, k=5)
-            # for doc, score in results:
-            #     print(f"Score: {score}, Content: {doc.page_content[:100]}")
-
+            common_util.print_search_score(vector_store, query)
             retriever = vector_store.as_retriever(search_kwargs={"k": 5})
 
             response = rag_chain.invoke(query)
