@@ -65,6 +65,8 @@ def create_vector_store_with_textloader(
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     texts = splitter.split_documents(documents)
+    for obj in texts:
+        obj.page_content = f"search_document: {obj.page_content}"
 
     vector_store = Chroma.from_documents(
         documents=texts,

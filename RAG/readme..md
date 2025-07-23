@@ -27,7 +27,8 @@ how old is pandora
 - vector db:Qdrant(cloud)
 - llm:gemini
 - score the context of retriever
-
+## langchain_03_nomic_Chroma_llama3.2
+## langchain_04_nomic_Chroma_gemini_with_memory
 ### 网页
 - crawl4ai
 - firecrawl
