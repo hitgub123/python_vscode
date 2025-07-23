@@ -2,13 +2,13 @@ import os, sys
 
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from sentence_transformers import SentenceTransformer
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "rag_util"))
 )
-import common_util, account, vector_store_Qdrant, model_util
+import common_util, account, vector_store_Qdrant, embedding_util
 
 
 def create_custom_embeddings(model_name, model):
@@ -82,7 +82,7 @@ if __name__ == "__main__":
     collection_name = "rag_collection_without_ollama"
     embedding_model_name = "nomic-ai/nomic-embed-text-v1"
 
-    embedings_model = model_util.get_embedding(
+    embedings_model = embedding_util.get_embedding(
         model_name=embedding_model_name, model_source="sbert", trust_remote_code=True
     )
     texts_path = (

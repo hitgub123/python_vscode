@@ -1,37 +1,21 @@
 import os, sys
 
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-from langchain_huggingface import HuggingFaceEmbeddings
-from sentence_transformers import SentenceTransformer
+from langchain_community.llms import Ollama
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "rag_util"))
 )
-import common_util, vector_store_Chroma_PCA, embedding_util
+import common_util, open_webui_util
+import vector_store_Chroma_new, embedding_util
 
 
-def create_custom_embeddings(model_name, model, pca):
-    class CustomEmbeddings(HuggingFaceEmbeddings):
-        def embed_documents(self, texts):
-            embeddings_768d = model.encode(
-                texts, batch_size=32, normalize_embeddings=True
-            )
-            if pca:
-                return pca.transform(embeddings_768d).tolist()
-            return embeddings_768d.tolist()
-
-        def embed_query(self, text):
-            embedding_768d = model.encode([text], normalize_embeddings=True)[0]
-            if pca:
-                return pca.transform([embedding_768d]).tolist()[0]
-            return embedding_768d.tolist()
-
-    return CustomEmbeddings(model_name=model_name)
-
-
-def create_rag_chain(vector_store, embedding_function):
+def create_rag_chain(
+    vector_store,
+    embedding_function,
+    ollama_url="http://localhost:11434",
+):
     from langchain_core.prompts import ChatPromptTemplate
-    from langchain_google_genai import ChatGoogleGenerativeAI
     from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 
     def print_context_and_score(x):
@@ -52,15 +36,11 @@ def create_rag_chain(vector_store, embedding_function):
         print("Individual Documents and Scores:")
         for i, (doc, score) in enumerate(zip(docs, doc_scores)):
             print(f"Doc {i+1} (Score: {score:.3f}):\n{doc.page_content[:1000]}")
-        # print("Combined Context:\n", context)
         print(f"Context Score: {context_score:.3f}")
-        return {"context": context, "question": query}  # Return dict for prompt
+        return {"context": context, "question": query}
 
     # Initialize LLM (replace with your API key)
-    google_api_key = os.environ.get("gemini_api_key2")
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash", google_api_key=google_api_key, temperature=0
-    )
+    llm = Ollama(model="llama3.2", base_url=ollama_url, temperature=0)
 
     # Define RAG prompt
     prompt = ChatPromptTemplate.from_template(
@@ -73,16 +53,6 @@ def create_rag_chain(vector_store, embedding_function):
     # Create retriever
     retriever = vector_store.as_retriever(search_kwargs={"k": 5})
 
-    # Build RAG chain
-    # rag_chain = (
-    #     {
-    #         "context": retriever
-    #         | (lambda docs: "\n".join(doc.page_content for doc in docs)),
-    #         "question": RunnablePassthrough(),
-    #     }
-    #     | prompt
-    #     | llm
-    # )
     rag_chain = (
         {
             "docs": retriever,  # Pass raw Document list
@@ -97,9 +67,10 @@ def create_rag_chain(vector_store, embedding_function):
 
 if __name__ == "__main__":
     collection_name = "rag_collection"
-    embedding_model_name = "paraphrase-multilingual-mpnet-base-v2"
-    embedings_model = embedding_util.get_embedding(
-        model_name=embedding_model_name, model_source="sbert"
+    embedding_model_name = "nomic-embed-text"
+    # embedding_model_name = "bge-m3"
+    embedding = embedding_util.get_embedding(
+        model_name=embedding_model_name, model_source="ollama"
     )
     texts_path = (
         "doc/Odd John_ A Story Between Jest and Earnest.txt",
@@ -109,37 +80,26 @@ if __name__ == "__main__":
     current_file_path = os.path.abspath(__file__)
     current_dir = os.path.dirname(current_file_path)
 
-    pca_model_path = None
-    pca_model_path = os.path.join(current_dir, "model/pca_model.pkl")
+    persist_directory = os.path.join(current_dir, "db/main_with_ollama")
 
-    persist_directory = os.path.join(current_dir, "db/chroma_db_1_pca")
-    if pca_model_path:
-        persist_directory = persist_directory + "_with_PCA"
-    target_dims = 128
-
-    query_mode = 1
+    query_mode = 0
     if query_mode:
-        vector_store, embedding_function = vector_store_Chroma_PCA.get_vector_store(
+        vector_store, embedding_function = vector_store_Chroma_new.get_vector_store(
             collection_name=collection_name,
-            embedding_model_name=embedding_model_name,
+            embedding=embedding,
             persist_directory=persist_directory,
-            create_custom_embeddings=create_custom_embeddings,
-            embedings_model=embedings_model,
-            pca_model_path=pca_model_path,
         )
     else:
-        vector_store, embedding_function = vector_store_Chroma_PCA.create_vector_store(
+        vector_store, embedding_function = vector_store_Chroma_new.create_vector_store(
             collection_name=collection_name,
-            embedding_model_name=embedding_model_name,
-            texts_path=texts_path,
-            pca_model_path=pca_model_path,
+            embedding=embedding,
             persist_directory=persist_directory,
-            target_dims=target_dims,
-            create_custom_embeddings=create_custom_embeddings,
-            embedings_model=embedings_model,
+            texts_path=texts_path,
         )
 
     rag_chain = create_rag_chain(vector_store, embedding_function)
+
+    # open_webui_util.run_api(rag_chain, vector_store)
 
     while True:
         query = input("Please enter query (type 'q' to quit): ")
@@ -151,4 +111,4 @@ if __name__ == "__main__":
             retriever = vector_store.as_retriever(search_kwargs={"k": 5})
 
             response = rag_chain.invoke(query)
-            print(response.content)
+            print(response)

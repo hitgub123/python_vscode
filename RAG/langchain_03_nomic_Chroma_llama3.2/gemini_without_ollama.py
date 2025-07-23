@@ -1,20 +1,15 @@
 import os, sys
 
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-from langchain_community.llms import Ollama
-
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "rag_util"))
 )
-import common_util, open_webui_util
-import vector_store_Chroma_new, embedding_util
+import common_util, embedding_util
+from model import model_util
+import vector_store_Chroma_new
 
 
-def create_rag_chain(
-    vector_store,
-    embedding_function,
-    ollama_url="http://localhost:11434",
-):
+def create_rag_chain(vector_store, embedding_function, llm):
     from langchain_core.prompts import ChatPromptTemplate
     from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 
@@ -35,12 +30,11 @@ def create_rag_chain(
         print("Question:", query)
         print("Individual Documents and Scores:")
         for i, (doc, score) in enumerate(zip(docs, doc_scores)):
-            print(f"Doc {i+1} (Score: {score:.3f}):\n{doc.page_content[:1000]}")
+            print(
+                f"{">"*20} \nDoc {i+1} (Score: {score:.3f}):\n{doc.page_content[:1000]}"
+            )
         print(f"Context Score: {context_score:.3f}")
         return {"context": context, "question": query}
-
-    # Initialize LLM (replace with your API key)
-    llm = Ollama(model="llama3.2", base_url=ollama_url, temperature=0)
 
     # Define RAG prompt
     prompt = ChatPromptTemplate.from_template(
@@ -51,7 +45,7 @@ def create_rag_chain(
     )
 
     # Create retriever
-    retriever = vector_store.as_retriever(search_kwargs={"k": 5})
+    retriever = vector_store.as_retriever(search_kwargs={"k": 10})
 
     rag_chain = (
         {
@@ -66,40 +60,42 @@ def create_rag_chain(
 
 
 if __name__ == "__main__":
+    llm = model_util.get_model()
+
     collection_name = "rag_collection"
-    embedding_model_name = "nomic-embed-text"
+    embedding_model_name = "nomic-ai/nomic-embed-text-v1.5"
     # embedding_model_name = "bge-m3"
     embedding = embedding_util.get_embedding(
-        model_name=embedding_model_name, model_source="ollama"
+        model_name=embedding_model_name,
+        model_kwargs={"device": "cpu", "trust_remote_code": True},
+        encode_kwargs={"normalize_embeddings": True},
     )
     texts_path = (
         "doc/Odd John_ A Story Between Jest and Earnest.txt",
         "doc/Pandora.txt",
-        # "doc/Odd John_ A Story Between Jest and Earnest-chinese.txt",
     )
     current_file_path = os.path.abspath(__file__)
     current_dir = os.path.dirname(current_file_path)
 
-    persist_directory = os.path.join(current_dir, "db/chroma_db_1")
+    py_name = common_util.get_py_name()
+    persist_directory = os.path.join(current_dir, f"db/{py_name}")
 
-    query_mode = 0
+    query_mode = 1
     if query_mode:
-        vector_store, embedding_function = vector_store_Chroma_new.get_vector_store(
+        vector_store = vector_store_Chroma_new.get_vector_store(
             collection_name=collection_name,
             embedding=embedding,
             persist_directory=persist_directory,
         )
     else:
-        vector_store, embedding_function = vector_store_Chroma_new.create_vector_store(
+        vector_store = vector_store_Chroma_new.create_vector_store_with_textloader(
             collection_name=collection_name,
             embedding=embedding,
-            persist_directory=persist_directory,
             texts_path=texts_path,
+            persist_directory=persist_directory,
         )
 
-    rag_chain = create_rag_chain(vector_store, embedding_function)
-
-    # open_webui_util.run_api(rag_chain, vector_store)
+    rag_chain = create_rag_chain(vector_store, embedding, llm)
 
     while True:
         query = input("Please enter query (type 'q' to quit): ")
@@ -107,8 +103,6 @@ if __name__ == "__main__":
             print("Exiting the program.")
             break
         else:
-            common_util.print_search_score(vector_store, query)
-            retriever = vector_store.as_retriever(search_kwargs={"k": 5})
-
+            # common_util.print_search_score(vector_store, query)
             response = rag_chain.invoke(query)
-            print(response)
+            print(response.content)
