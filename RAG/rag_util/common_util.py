@@ -1,5 +1,5 @@
 import hashlib, os, numpy as np, sys
-
+from scipy.spatial.distance import cosine
 
 def gen_md5(text):
     hash_value = hashlib.md5(text.encode("utf-8")).hexdigest()
@@ -57,20 +57,19 @@ def score_context(query, context, embedding_function):
     """
     Calculate cosine distance between query and context (or individual docs).
     """
+    query=f"search_query: {query}"
     if isinstance(context, list):
         scores = []
+        query_embedding = embedding_function.embed_query(query)
         for doc in context:
-            doc_embedding = embedding_function.embed_query(doc.page_content)
-            query_embedding = embedding_function.embed_query(query)
-            scores.append(cosine_distance(query_embedding, doc_embedding))
+            doc_embedding = embedding_function.embed_documents([doc.page_content])[0]
+            # scores.append(cosine_distance(query_embedding, doc_embedding))
+            scores.append(cosine(query_embedding, doc_embedding))
         return scores
     else:
         query_embedding = embedding_function.embed_query(query)
-        context_embedding = embedding_function.embed_query(context)
-        return cosine_distance(query_embedding, context_embedding)
-
-    results = vector_store.similarity_search_with_score(query="qux")
-
+        context_embedding = embedding_function.embed_documents([context])[0]
+        return cosine(query_embedding, context_embedding)
 
 def print_search_score(vector_store, query, k=5):
     results = vector_store.similarity_search_with_score(query=query, k=k)

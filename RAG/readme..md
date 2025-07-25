@@ -29,6 +29,8 @@ how old is pandora
 - score the context of retriever
 ## langchain_03_nomic_Chroma_llama3.2
 ## langchain_04_nomic_Chroma_gemini_with_memory
+
+我看有人发帖介绍ai相关的技术栈，内容如下。值得学习吗？有什么用？你有什么看法，
 ### 网页
 - crawl4ai
 - firecrawl
@@ -73,6 +75,6 @@ how old is pandora
 - bentoml
 
 ### 评估rag系统性能
-- ragas
-- giskard
-- trulens
+- ragas ok
+- giskard pass
+- trulens pass 

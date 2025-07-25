@@ -20,10 +20,14 @@ def create_vector_store(
     embedding,
     persist_directory,
     texts_path,
+    chunk_size=600,
+    overlap=100,
 ):
     from langchain_core.documents import Document
 
-    texts = common_util.get_chunks_from_file(texts_path, chunk_size=600, overlap=100)
+    texts = common_util.get_chunks_from_file(
+        texts_path, chunk_size=chunk_size, overlap=overlap
+    )
     # Prepare documents for Chroma
     documents = [
         Document(page_content=texts[i], id=common_util.gen_md5(texts[i]))
@@ -52,18 +56,25 @@ def create_vector_store(
 
 
 def create_vector_store_with_textloader(
-    collection_name, embedding, persist_directory, texts_path
+    collection_name,
+    embedding,
+    persist_directory,
+    texts_path,
+    chunk_size=500,
+    chunk_overlap=50,
 ):
     from langchain_community.document_loaders import TextLoader
     from langchain.text_splitter import RecursiveCharacterTextSplitter
 
     documents = []
     for path in texts_path:
-        loader = TextLoader(path,encoding="utf-8")
+        loader = TextLoader(path, encoding="utf-8")
         docs = loader.load()
         documents.extend(docs)
 
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size, chunk_overlap=chunk_overlap
+    )
     texts = splitter.split_documents(documents)
     for obj in texts:
         obj.page_content = f"search_document: {obj.page_content}"
