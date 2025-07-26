@@ -30,7 +30,7 @@ how old is pandora
 ## langchain_03_nomic_Chroma_llama3.2
 ## langchain_04_nomic_Chroma_gemini_with_memory
 
-我看有人发帖介绍ai相关的技术栈，内容如下。值得学习吗？有什么用？你有什么看法，
+我看有人发帖介绍ai相关的技术栈，内容如下。值得学习吗？有什么用？哪个在日本ai业界比较流行？你有什么看法，
 ### 网页
 - crawl4ai
 - firecrawl
@@ -41,10 +41,10 @@ how old is pandora
 - megaparser
 - extractthinker
 ### 文本分割
-- instructor
-- llamahub
-- unstructured.io
-### 分块策略
+- instructor ok
+- llamahub(LlamaIndex) ok
+- unstructured.io pass
+### 分块策略(SentenceSplitter??)
 - 基于token分块
 - 递归分块
 - 语义分块
@@ -63,7 +63,7 @@ how old is pandora
 - grakn
 - wikibase
 
-### 可观测性-监控和挑食rag管道
+### 可观测性-监控和调试rag管道
 - arize ai
 - whylabs
 - langsmith
@@ -77,4 +77,8 @@ how old is pandora
 ### 评估rag系统性能
 - ragas ok
 - giskard pass
-- trulens pass 
+- trulens pass
+
+### 
+- lora
+- 微调
