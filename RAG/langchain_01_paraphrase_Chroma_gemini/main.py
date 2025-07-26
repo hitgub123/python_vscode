@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
     persist_directory = os.path.join(current_dir, "db/chroma_db_1")
 
-    query_mode = 0
+    query_mode = 1
     if query_mode:
         vector_store, embedding_function = vector_store_Chroma.get_vector_store(
             collection_name=collection_name,

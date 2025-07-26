@@ -95,6 +95,9 @@ def create_rag_chain(vector_store, embedding_function):
     return rag_chain
 
 
+
+
+
 if __name__ == "__main__":
     collection_name = "rag_collection"
     embedding_model_name = "paraphrase-multilingual-mpnet-base-v2"

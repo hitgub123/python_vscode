@@ -32,22 +32,22 @@ how old is pandora
 
 我看有人发帖介绍ai相关的技术栈，内容如下。值得学习吗？有什么用？哪个在日本ai业界比较流行？你有什么看法，
 ### 网页
-- crawl4ai
-- firecrawl
-- scrapegraph ai
+- crawl4ai <font color="red">ok</font>
+- firecrawl <font color="orange">pass</font>
+- scrapegraph ai <font color="orange">pass</font>
 ### 文档
-- docling
-- lama parse
-- megaparser
-- extractthinker
+- docling <font color="red">ok</font>
+- lama parse <font color="orange">pass</font>
+- megaparser <font color="orange">pass</font>
+- extractthinker <font color="orange">pass</font>
 ### 文本分割
-- instructor ok
-- llamahub(LlamaIndex) ok
-- unstructured.io pass
+- instructor <font color="red">ok</font>
+- llamahub(LlamaIndex) <font color="red">ok</font>
+- unstructured.io <font color="orange">pass</font>
 ### 分块策略(SentenceSplitter??)
-- 基于token分块
-- 递归分块
-- 语义分块
+- 基于token分块 <font color="red">ok</font>
+- 递归分块 <font color="red">ok</font>
+- 语义分块 <font color="red">ok</font>
 ### 多查询
 ### 检索增强
 #### 重排序
@@ -75,9 +75,9 @@ how old is pandora
 - bentoml
 
 ### 评估rag系统性能
-- ragas ok
-- giskard pass
-- trulens pass
+- ragas <font color="red">ok</font>
+- giskard <font color="orange">pass</font>
+- trulens <font color="orange">pass</font>
 
 ### 
 - lora
