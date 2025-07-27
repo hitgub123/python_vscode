@@ -1,4 +1,3 @@
-import llama_index.llms.gemini
 import os, sys
 from llama_index.core.schema import Document
 

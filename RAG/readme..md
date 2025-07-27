@@ -30,7 +30,6 @@ how old is pandora
 ## langchain_03_nomic_Chroma_llama3.2
 ## langchain_04_nomic_Chroma_gemini_with_memory
 
-我看有人发帖介绍ai相关的技术栈，内容如下。值得学习吗？有什么用？哪个在日本ai业界比较流行？你有什么看法，
 ### 网页
 - crawl4ai <font color="red">ok</font>
 - firecrawl <font color="orange">pass</font>
@@ -48,25 +47,29 @@ how old is pandora
 - 基于token分块 <font color="red">ok</font>
 - 递归分块 <font color="red">ok</font>
 - 语义分块 <font color="red">ok</font>
-### 多查询
+### <font color="orange">多查询</font>
 ### 检索增强
 #### 重排序
-- bge rerank
-- cohere rerank
-#### 混合检索
-- dpr
-- colbert
-### 统一语义空间
-- superlinked
+- bge rerank <font color="red">ok</font>
+- cohere rerank <font color="orange">pass</font>
+####  <font color="orange">混合检索</font>
+- dpr <font color="orange">pass</font>
+- colbert <font color="orange">pass</font>
+
+### <font color="orange">统一语义空间</font>
+- superlinked <font color="orange">pass</font>
 ### 知识图谱
-- neo4j
-- grakn
-- wikibase
+- neo4j <font color="red">ok</font>
+- grakn <font color="orange">pass</font>
+- wikibase <font color="orange">pass</font>
 
 ### 可观测性-监控和调试rag管道
 - arize ai
 - whylabs
 - langsmith
+
+我看有人发帖介绍ai相关的技术栈，内容如下。值得学习吗？有什么用？哪个在日本ai业界比较流行？你有什么看法，
+
 
 ### 工作流编排
 - beam ai
@@ -82,3 +85,4 @@ how old is pandora
 ### 
 - lora
 - 微调
+- use local llm to use neo4j

@@ -1,5 +1,6 @@
 import common_util, datetime
 from langchain_chroma import Chroma
+from langchain_core.documents import Document
 
 
 def get_vector_store(
@@ -23,8 +24,6 @@ def create_vector_store(
     chunk_size=600,
     overlap=100,
 ):
-    from langchain_core.documents import Document
-
     texts = common_util.get_chunks_from_file(
         texts_path, chunk_size=chunk_size, overlap=overlap
     )
@@ -85,4 +84,25 @@ def create_vector_store_with_textloader(
         collection_name=collection_name,
         persist_directory=persist_directory,
     )
+    return vector_store
+
+
+
+def create_vector_store_SemanticSplitter(
+    collection_name,
+    embedding,
+    persist_directory,
+    documents,
+):
+    batch_size = 128
+    for i in range(0, len(documents), batch_size):
+        nowtime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"[{nowtime}]Current : {i} to {i + batch_size} of {len(documents)}")
+        batch = documents[i : i + batch_size]
+        vector_store = Chroma.from_documents(
+            documents=batch,
+            embedding=embedding,
+            collection_name=collection_name,
+            persist_directory=persist_directory,
+        )
     return vector_store

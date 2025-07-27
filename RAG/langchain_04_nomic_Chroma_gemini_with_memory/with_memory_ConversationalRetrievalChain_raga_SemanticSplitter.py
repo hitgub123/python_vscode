@@ -1,10 +1,11 @@
 import os, sys
+from langchain_core.documents import Document
 
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "rag_util"))
+sys.path.extend(
+    [os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "rag_util"))]
 )
-import common_util, embedding_util,test_util
+import common_util, embedding_util, test_util, split_util
 from model import model_util
 import vector_store_Chroma_new
 
@@ -23,7 +24,9 @@ def create_rag_chain(vector_store, embedding_function, llm):
         context = [doc.page_content for doc in docs]
         context_str = "\n".join(context)
         doc_content_scores = common_util.score_context(query, docs, embedding_function)
-        context_score = common_util.score_context(query, context_str, embedding_function)
+        context_score = common_util.score_context(
+            query, context_str, embedding_function
+        )
 
         print("Question:", query)
         print("Individual Documents and Scores:")
@@ -123,27 +126,39 @@ if __name__ == "__main__":
             persist_directory=persist_directory,
         )
     else:
-        vector_store = vector_store_Chroma_new.create_vector_store_with_textloader(
+        all_documents = []
+        for text_path in texts_path:
+            with open(text_path, "r", encoding="utf-8") as f:
+                text = f.read()
+                _, nodes = split_util.get_chunks_from_file_SemanticSplitter(
+                    text=text,
+                )
+                documents = [
+                    Document(page_content=node.text, metadata=node.metadata)
+                    for node in nodes
+                ]
+                all_documents.extend(documents)
+        vector_store = vector_store_Chroma_new.create_vector_store_SemanticSplitter(
             collection_name=collection_name,
             embedding=embedding,
-            texts_path=texts_path,
             persist_directory=persist_directory,
+            documents=all_documents,
         )
 
     rag_chain = create_rag_chain(vector_store, embedding, llm)
 
-    while True:
-        query = input("Please enter query (type 'q' to quit): ")
-        if query.lower() == "q":
-            print("Exiting the program.")
-            break
-        else:
-            import time
+    # while True:
+    #     query = input("Please enter query (type 'q' to quit): ")
+    #     if query.lower() == "q":
+    #         print("Exiting the program.")
+    #         break
+    #     else:
+    #         import time
 
-            start_time = time.time()
-            response = rag_chain.invoke(f"search_query: {query}")
-            print(f"查询耗时: {time.time() - start_time:.2f} 秒")
-            print("\n回答:", response["answer"])
+    #         start_time = time.time()
+    #         response = rag_chain.invoke(f"search_query: {query}")
+    #         print(f"查询耗时: {time.time() - start_time:.2f} 秒")
+    #         print("\n回答:", response["answer"])
 
     # RAGAS 评估
     test_util.test_llm(rag_chain)
