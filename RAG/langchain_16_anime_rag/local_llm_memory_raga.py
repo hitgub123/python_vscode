@@ -6,7 +6,7 @@ sys.path.extend(
     [os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "rag_util"))]
 )
 import common_util, embedding_util, test_util, split_util
-from model import model_util
+from model import local_llm_util
 import vector_store_Chroma_new
 
 
@@ -55,7 +55,8 @@ def create_rag_chain(vector_store, embedding_function, llm):
 
     # Define RAG prompt
     prompt = ChatPromptTemplate.from_template(
-        """You are an assistant for question-answering tasks. Use the following context and conversation history to answer the question. If you don't know the answer, say so.
+        """You are an assistant for question-answering tasks. Use the following context and conversation history to answer the question without additional commentary or questions.
+        If you don't know the answer, say so.
         Conversation History: {history}        
         Question: {question}
         Context: {context}
@@ -88,7 +89,8 @@ def create_rag_chain(vector_store, embedding_function, llm):
         )
         | RunnableLambda(
             lambda x: {
-                "answer": llm.invoke(x["prompt"]).content,
+                # "answer": llm.invoke(x["prompt"),
+                "answer": llm.invoke(x["prompt"].messages[0].content),
                 "question": x["question"],
                 "context": x["context"],
             }
@@ -99,7 +101,7 @@ def create_rag_chain(vector_store, embedding_function, llm):
 
 
 if __name__ == "__main__":
-    llm = model_util.get_model()
+    llm = local_llm_util.Local_llm()
 
     collection_name = "rag_collection"
     embedding_model_name = "nomic-ai/nomic-embed-text-v1.5"
@@ -116,7 +118,8 @@ if __name__ == "__main__":
     current_dir = os.path.dirname(current_file_path)
 
     py_name = common_util.get_py_name()
-    persist_directory = os.path.join(current_dir, f"db/{py_name}")
+    # persist_directory = os.path.join(current_dir, f"db/{py_name}")
+    persist_directory = os.path.join(current_dir, f"db/{py_name}_SentenceSplitter")
 
     query_mode = 1
     if query_mode:
@@ -130,6 +133,7 @@ if __name__ == "__main__":
         for text_path in texts_path:
             with open(text_path, "r", encoding="utf-8") as f:
                 text = f.read()
+                # _, nodes = split_util.get_chunks_from_file_SentenceSplitter(
                 _, nodes = split_util.get_chunks_from_file_SemanticSplitter(
                     text=text,
                 )
@@ -147,18 +151,19 @@ if __name__ == "__main__":
 
     rag_chain = create_rag_chain(vector_store, embedding, llm)
 
-    # while True:
-    #     query = input("Please enter query (type 'q' to quit): ")
-    #     if query.lower() == "q":
-    #         print("Exiting the program.")
-    #         break
-    #     else:
-    #         import time
+    while True:
+        query = input("Please enter query (type 'q' to quit): ")
+        if query.lower() == "q":
+            print("Exiting the program.")
+            break
+        else:
+            import time
 
-    #         start_time = time.time()
-    #         response = rag_chain.invoke(f"search_query: {query}")
-    #         print(f"查询耗时: {time.time() - start_time:.2f} 秒")
-    #         print("\n回答:", response["answer"])
+            start_time = time.time()
+            # response = rag_chain.invoke(f"search_query: {query}")
+            response = rag_chain.invoke(query)
+            print(f"查询耗时: {time.time() - start_time:.2f} 秒")
+            print("\n回答:", response["answer"])
 
     # RAGAS 评估
     test_util.test_llm(rag_chain)

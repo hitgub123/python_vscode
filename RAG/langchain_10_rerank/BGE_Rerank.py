@@ -153,7 +153,7 @@ if __name__ == "__main__":
                     for node in nodes
                 ]
                 all_documents.extend(documents)
-        vector_store = vector_store_Chroma_new.create_vector_store_SemanticSplitter(
+        vector_store = vector_store_Chroma_new.create_vector_store_documents(
             collection_name=collection_name,
             embedding=embedding,
             persist_directory=persist_directory,

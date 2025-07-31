@@ -87,8 +87,7 @@ def create_vector_store_with_textloader(
     return vector_store
 
 
-
-def create_vector_store_SemanticSplitter(
+def create_vector_store_documents(
     collection_name,
     embedding,
     persist_directory,
