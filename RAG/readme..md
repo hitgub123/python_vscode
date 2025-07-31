@@ -64,18 +64,18 @@ how old is pandora
 - wikibase <font color="orange">pass</font>
 
 ### 可观测性-监控和调试rag管道
-- arize ai
-- whylabs
-- langsmith
+- arize ai <font color="orange">pass</font>
+- whylabs <font color="orange">pass</font>
+- langsmith <font color="red">ok</font>
 
 我看有人发帖介绍ai相关的技术栈，内容如下。值得学习吗？有什么用？哪个在日本ai业界比较流行？你有什么看法，
 
 
 ### 工作流编排
-- beam ai
-- modal
-- prefect marvin
-- bentoml
+- beam ai <font color="orange">pass</font>
+- modal <font color="orange">pass</font>
+- prefect marvin <font color="orange">pass</font>
+- bentoml <font color="orange">pass</font>
 
 ### 评估rag系统性能
 - ragas <font color="red">ok</font>
@@ -85,4 +85,4 @@ how old is pandora
 ### 
 - lora
 - 微调
-- use local llm to use neo4j
+- use local llm to use neo4j <font color="red">ok</font>
