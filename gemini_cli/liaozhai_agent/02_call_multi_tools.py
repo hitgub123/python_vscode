@@ -1,7 +1,14 @@
 
 
 # -*- coding: utf-8 -*-
-import os
+import os, sys
+
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "cca_util"))
+)
+import gemini_api_util
+from model import local_llm_util
 from dotenv import load_dotenv
 from typing import TypedDict, Annotated, Sequence
 import operator
@@ -11,18 +18,17 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.tools import tool
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.messages import BaseMessage, HumanMessage
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
+from langchain_core.messages import ToolMessage
+
 
 from stories import LIAOZHAI_STORIES
 
-# --- LLMとツールの定義 ---
+llm = gemini_api_util.get_llm()
+# llm = local_llm_util.Local_llm()
 
-# LLMを初期化。ツールとエージェントの両方からアクセスできるようにします。
-# Geminiはシステムメッセージをサポートしないため、人間とモデルの対話形式に変換します。
-llm = ChatGoogleGenerativeAI(model="gemini-pro", convert_system_message_to_human=True)
-
+recursion_limit=10
 @tool
 def get_story_data(story_title: str) -> str:
     """根据故事标题，获取《聊斋志异》的原文和现代文译文。
@@ -32,24 +38,20 @@ def get_story_data(story_title: str) -> str:
     if story:
         return f"已找到《{story_title}》\n原文: {story['original']}\n现代文: {story['modern']}"
     else:
-        return f"错误：未找到名为《{story_title}》的故事。"
+        raise Exception(f"未找到《{story_title}》")
 
 # 潤色ツールの入力スキーマを定義して、より明確にします
 class PolishStorySchema(BaseModel):
-    story_title: str = Field(description="需要润色的小说标题 (The title of the story to be polished)")
+    story_data: str = Field(description="故事的原文和现代文内容")
     user_request: str = Field(description="用户的具体润色要求 (The user's specific request for polishing)")
 
 @tool(args_schema=PolishStorySchema)
-def polish_and_rewrite_story(story_title: str, user_request: str) -> str:
+def polish_and_rewrite_story(story_data: str, user_request: str) -> str:
     """根据用户的具体要求，对指定的故事进行文学性的润色和改写。
     (Polishes and rewrites a specific story based on the user's request.)"""
-    print(f"\n--- TOOL CALL: polish_and_rewrite_story(story_title='{story_title}', user_request='{user_request}') ---")
+    # 根据用户的具体要求，对指定的故事进行文学性的润色和改写。
+    print(f"\n--- TOOL CALL: polish_and_rewrite_story(story_data='{story_data}', user_request='{user_request}') ---")
     
-    # まず物語のデータを取得します
-    story_data = get_story_data.invoke({"story_title": story_title})
-    if "错误" in story_data:
-        return story_data
-
     # ツール内で潤色用のチェーンを定義します
     polish_prompt = PromptTemplate(
         template="""你是一位文笔卓越的小说家。请根据以下的原始材料以及用户的具体要求，对故事进行文学性的润色和改写。
@@ -90,7 +92,7 @@ tools = [get_story_data, polish_and_rewrite_story]
 tool_node = ToolNode(tools)
 
 # LLMにツールをバインドして、いつツールを呼び出すべきかをモデルに知らせます
-model = llm.bind_tools(tools)
+llm_with_tools = llm.bind_tools(tools)
 
 # エージェントの状態を定義します。メッセージのリストを保持します。
 class AgentState(TypedDict):
@@ -110,7 +112,7 @@ def should_continue(state: AgentState) -> str:
 def call_model(state: AgentState) -> dict:
     """LLMを呼び出して次のアクションを決定します。"""
     messages = state['messages']
-    response = model.invoke(messages)
+    response = llm_with_tools.invoke(messages)
     # 新しいメッセージをリストとして返し、既存のリストに追加します
     return {"messages": [response]}
 
@@ -144,12 +146,8 @@ app = workflow.compile()
 
 def main():
     load_dotenv()
-    if os.getenv("GOOGLE_API_KEY") is None:
-        print("错误: 环境变量 'GOOGLE_API_KEY' 未设置。")
-        print('请在 .env 文件中设置您的API密钥，格式为 \'GOOGLE_API_KEY="YOUR_API_KEY_HERE"\'')
-        return
-
     user_query = "我想让《画皮》这个故事的文笔更优美，更有诗意。你能帮我改写一下吗？"
+    # user_query = "《画皮》这个故事的内容是什么？"
     print(f"--- 用户查询 ---\n{user_query}\n")
 
     # エージェントを実行します
@@ -157,14 +155,14 @@ def main():
     
     print("--- Agent 开始思考... ---")
     # streamメソッドを使うと、エージェントの各ステップの出力をリアルタイムで確認できます
-    for output in app.stream(inputs, {"recursion_limit": 10}):
+    for output in app.stream(inputs, {"recursion_limit": recursion_limit}):
         for key, value in output.items():
             print(f"--- 来自节点: {key} ---")
             # メッセージの内容を整形して表示
             if 'messages' in value:
                 for msg in value['messages']:
-                    if msg.tool_calls:
-                        print(f"  - Tool Call: {msg.tool_calls}")
+                    if isinstance(msg, ToolMessage) :
+                        print(f"  - Tool Call: {msg.name} : {msg.content}")
                     else:
                         print(f"  - AI: {msg.content}")
             else:
@@ -172,12 +170,12 @@ def main():
         print("\n--------------------------------\n")
 
     # 最終的な状態を取得します
-    final_state = app.invoke(inputs, {"recursion_limit": 10})
-    final_answer = final_state['messages'][-1].content
+    # final_state = app.invoke(inputs, {"recursion_limit": recursion_limit})
+    # final_answer = final_state['messages'][-1].content
 
     print("--- Agent执行完毕 ---")
     print("--- 最终结果 ---")
-    print(final_answer)
+    # print(final_answer)
 
 if __name__ == "__main__":
     main()

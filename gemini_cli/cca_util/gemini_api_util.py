@@ -67,13 +67,14 @@ def get_embedings(texts, dims, model=config["embedding_model"], batch_size=100):
             print(f"Error in batch {i // batch_size}: {str(e)}")
     return embeddings
 
+
 if __name__ == "__main__":
-    client=get_ai_client()
+    client = get_ai_client()
     response = client.models.generate_content(
-    model="gemini-2.5-flash",
-    contents="How does AI work?",
-    config=types.GenerateContentConfig(
-        thinking_config=types.ThinkingConfig(thinking_budget=0) # Disables thinking
+        model="gemini-2.5-flash",
+        contents="How does AI work?",
+        config=types.GenerateContentConfig(
+            thinking_config=types.ThinkingConfig(thinking_budget=0)  # Disables thinking
         ),
     )
     print(response.text)

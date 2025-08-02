@@ -1,0 +1,2 @@
+QDRANT_URL="https://21e68e2c-5e57-4a06-8521-c9e5572bffdd.europe-west3-0.gcp.cloud.qdrant.io:6333"
+QDRANT_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.MYTWC60jwBt7zTPoOtBRGUM3g8oa7XfAyAdlT6ivVCw"
