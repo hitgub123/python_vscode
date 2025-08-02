@@ -10,3 +10,5 @@ PythonImportHelper-v2-Completion.json
 
 RAG/rag_util/account.py
 
+gemini_cli/liaozhai_agent/.env
+.gitignore

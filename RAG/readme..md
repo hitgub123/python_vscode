@@ -85,4 +85,4 @@ how old is pandora
 ### 
 - lora
 - 微调
-- use local llm to use neo4j <font color="red">ok</font>
+- use local llm to use neo4j <font color="red">ok</font>!
