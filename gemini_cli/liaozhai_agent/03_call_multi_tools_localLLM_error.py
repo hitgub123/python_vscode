@@ -1,5 +1,3 @@
-
-
 # -*- coding: utf-8 -*-
 import os, sys
 
@@ -30,11 +28,14 @@ from stories import LIAOZHAI_STORIES
 llm = local_llm_util.Local_llm()
 # llm = LocalLLM(llm_name="google/gemma-3-1b-it")
 
-recursion_limit=10
+recursion_limit = 10
+
+
 @tool
 def get_story_data(story_title: str) -> str:
     """根据故事标题，获取《聊斋志异》的原文和现代文译文。
-    (Get the original and modern Chinese text of a Liaozhai story based on its title.)"""
+    (Get the original and modern Chinese text of a Liaozhai story based on its title.)
+    """
     print(f"\n--- TOOL CALL: get_story_data(story_title='{story_title}') ---")
     story = LIAOZHAI_STORIES.get(story_title)
     if story:
@@ -42,18 +43,24 @@ def get_story_data(story_title: str) -> str:
     else:
         raise Exception(f"未找到《{story_title}》")
 
+
 # 潤色ツールの入力スキーマを定義して、より明確にします
 class PolishStorySchema(BaseModel):
     story_data: str = Field(description="故事的原文和现代文内容")
-    user_request: str = Field(description="用户的具体润色要求 (The user's specific request for polishing)")
+    user_request: str = Field(
+        description="用户的具体润色要求 (The user's specific request for polishing)"
+    )
+
 
 @tool(args_schema=PolishStorySchema)
 def polish_and_rewrite_story(story_data: str, user_request: str) -> str:
     """根据用户的具体要求，对指定的故事进行文学性的润色和改写。
     (Polishes and rewrites a specific story based on the user's request.)"""
     # 根据用户的具体要求，对指定的故事进行文学性的润色和改写。
-    print(f"\n--- TOOL CALL: polish_and_rewrite_story(story_data='{story_data}', user_request='{user_request}') ---")
-    
+    print(
+        f"\n--- TOOL CALL: polish_and_rewrite_story(story_data='{story_data}', user_request='{user_request}') ---"
+    )
+
     # ツール内で潤色用のチェーンを定義します
     polish_prompt = PromptTemplate(
         template="""你是一位文笔卓越的小说家。请根据以下的原始材料以及用户的具体要求，对故事进行文学性的润色和改写。
@@ -74,18 +81,18 @@ def polish_and_rewrite_story(story_data: str, user_request: str) -> str:
 
 ---
 请开始你的创作：""",
-        input_variables=["story_data", "user_request"]
+        input_variables=["story_data", "user_request"],
     )
-    
+
     # 新しい構文: prompt | llm | parser
     polish_chain = polish_prompt | llm | StrOutputParser()
-    
+
     # チェーンを実行します
-    result = polish_chain.invoke({
-        "story_data": story_data,
-        "user_request": user_request
-    })
+    result = polish_chain.invoke(
+        {"story_data": story_data, "user_request": user_request}
+    )
     return result
+
 
 # --- エージェントの状態とグラフの定義 ---
 
@@ -96,27 +103,32 @@ tool_node = ToolNode(tools)
 # LLMにツールをバインドして、いつツールを呼び出すべきかをモデルに知らせます
 llm_with_tools = llm.bind_tools(tools)
 
+
 # エージェントの状態を定義します。メッセージのリストを保持します。
 class AgentState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], operator.add]
 
+
 # グラフのノードを定義します
+
 
 def should_continue(state: AgentState) -> str:
     """プロセスを続行するか終了するかを決定します。"""
-    last_message = state['messages'][-1]
+    last_message = state["messages"][-1]
     # ツール呼び出しがなければ終了します
     if not last_message.tool_calls:
         return "end"
     # ツール呼び出しがあれば続行します
     return "continue"
 
+
 def call_model(state: AgentState) -> dict:
     """LLMを呼び出して次のアクションを決定します。"""
-    messages = state['messages']
+    messages = state["messages"]
     response = llm_with_tools.invoke(messages)
     # 新しいメッセージをリストとして返し、既存のリストに追加します
     return {"messages": [response]}
+
 
 # グラフのワークフローを定義します
 workflow = StateGraph(AgentState)
@@ -130,21 +142,17 @@ workflow.set_entry_point("agent")
 
 # 条件付きエッジを追加します
 workflow.add_conditional_edges(
-    "agent",
-    should_continue,
-    {
-        "continue": "action",
-        "end": END
-    }
+    "agent", should_continue, {"continue": "action", "end": END}
 )
 
 # actionからagentへの通常のエッジを追加します
-workflow.add_edge('action', 'agent')
+workflow.add_edge("action", "agent")
 
 # グラフをコンパイルして実行可能なアプリケーションを作成します
 app = workflow.compile()
 
 # --- メインの実行部分 ---
+
 
 def main():
     load_dotenv()
@@ -154,21 +162,21 @@ def main():
 
     # エージェントを実行します
     inputs = {"messages": [HumanMessage(content=user_query)]}
-    
+
     print("--- Agent 开始思考... ---")
     # streamメソッドを使うと、エージェントの各ステップの出力をリアルタイムで確認できます
     for output in app.stream(inputs, {"recursion_limit": recursion_limit}):
         for key, value in output.items():
             print(f"--- 来自节点: {key} ---")
             # メッセージの内容を整形して表示
-            if 'messages' in value:
-                for msg in value['messages']:
-                    if isinstance(msg, ToolMessage) :
+            if "messages" in value:
+                for msg in value["messages"]:
+                    if isinstance(msg, ToolMessage):
                         print(f"  - Tool Call: {msg.name} : {msg.content}")
                     else:
                         print(f"  - AI: {msg.content}")
             else:
-                 print(value)
+                print(value)
         print("\n--------------------------------\n")
 
     # 最終的な状態を取得します
@@ -178,6 +186,7 @@ def main():
     print("--- Agent执行完毕 ---")
     print("--- 最终结果 ---")
     # print(final_answer)
+
 
 if __name__ == "__main__":
     main()

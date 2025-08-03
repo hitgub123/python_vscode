@@ -6,16 +6,17 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "cca_util"))
 )
 import gemini_api_util
+
 # from model import local_llm_util
 from dotenv import load_dotenv
 from typing import TypedDict, Annotated, Sequence
-import operator
+import operator, json
 
 from langchain_core.prompts import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.tools import tool
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.messages import BaseMessage, HumanMessage
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, ToolMessage
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import ToolMessage
@@ -26,6 +27,56 @@ from stories import LIAOZHAI_STORIES
 llm = gemini_api_util.get_llm()
 # llm = local_llm_util.Local_llm()
 recursion_limit = 10
+
+# 定义保存对话历史的路径
+HISTORY_FILE = "conversation_history.json"
+
+
+def load_conversation_history():
+    """加载对话历史"""
+    if os.path.exists(HISTORY_FILE):
+        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            # 将 JSON 数据转换为消息对象
+            messages = []
+            for item in data:
+                if not item["content"]:
+                    continue
+                if item["type"] == "human":
+                    messages.append(HumanMessage(content=item["content"]))
+                elif item["type"] == "ai":
+                    messages.append(AIMessage(content=item["content"]))
+                elif item["type"] == "tool":
+                    messages.append(
+                        ToolMessage(
+                            content=item["content"],
+                            name=item["name"],
+                            tool_call_id=item["tool_call_id"],
+                        )
+                    )
+            return messages
+    return []
+
+
+def save_conversation_history(messages):
+    """保存对话历史"""
+    data = []
+    for msg in messages:
+        if isinstance(msg, HumanMessage):
+            data.append({"type": "human", "content": msg.content})
+        elif isinstance(msg, AIMessage):
+            data.append({"type": "ai", "content": msg.content})
+        elif isinstance(msg, ToolMessage):
+            data.append(
+                {
+                    "type": "tool",
+                    "content": msg.content,
+                    "name": msg.name,
+                    "tool_call_id": msg.tool_call_id,
+                }
+            )
+    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 
 @tool
@@ -154,32 +205,37 @@ app = workflow.compile()
 def agent_main(user_query):
     print(f"--- 用户查询 ---\n{user_query}\n")
 
+    # 加载之前的对话历史
+    previous_messages = load_conversation_history()
+    input_messages = previous_messages + [HumanMessage(content=user_query)]
+
     # エージェントを実行します
-    inputs = {"messages": [HumanMessage(content=user_query)]}
+    inputs = {"messages": input_messages}
 
     print("--- Agent 开始思考... ---")
     # streamメソッドを使うと、エージェントの各ステップの出力をリアルタイムで確認できます
-    for output in app.stream(inputs, {"recursion_limit": recursion_limit}):
-        for key, value in output.items():
-            print(f"--- 来自节点: {key} ---")
-            # メッセージの内容を整形して表示
-            if "messages" in value:
-                for msg in value["messages"]:
-                    if isinstance(msg, ToolMessage):
-                        print(f"  - Tool Call: {msg.name} : {msg.content}")
-                    else:
-                        print(f"  - AI: {msg.content}")
-            else:
-                print(value)
-        print("\n--------------------------------\n")
+    # for output in app.stream(inputs, {"recursion_limit": recursion_limit}):
+    #     for key, value in output.items():
+    #         print(f"--- 来自节点: {key} ---")
+    #         # メッセージの内容を整形して表示
+    #         if "messages" in value:
+    #             for msg in value["messages"]:
+    #                 if isinstance(msg, ToolMessage):
+    #                     print(f"  - Tool Call: {msg.name} : {msg.content}")
+    #                 else:
+    #                     print(f"  - AI: {msg.content}")
+    #         else:
+    #             print(value)
+    #     print("\n--------------------------------\n")
 
     # 最終的な状態を取得します
-    # final_state = app.invoke(inputs, {"recursion_limit": recursion_limit})
-    # final_answer = final_state['messages'][-1].content
+    final_state = app.invoke(inputs, {"recursion_limit": recursion_limit})
+    final_answer = final_state["messages"][-1].content
+    save_conversation_history(final_state["messages"])
 
     print("--- Agent执行完毕 ---")
     print("--- 最终结果 ---")
-    # print(final_answer)
+    print(final_answer)
 
 
 def main():
