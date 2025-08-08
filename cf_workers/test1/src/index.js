@@ -1,34 +1,52 @@
 // src/index.ts
 var index_default = {
 	async fetch(request, env) {
+		let params = {};
+		if (request.method === 'GET') {
+			const url = new URL(request.url);
+			url.searchParams.forEach((value, key) => {
+				params[key] = value;
+			})
+		} else if (request.method === 'POST') {
+			params = await request.json();
+		}
 
-		const DB = env.D1_DB;
-
-		// const { results } = await DB.prepare("SELECT * FROM users").all();
-		// return new Response(JSON.stringify(results), {
-		// 	headers: { "Content-Type": "application/json" },
-		// });
-
-		const id = 4;
-		const name = 'ccccc';
-		const email = 'cc@ccccccc.com';
-		// await DB.prepare("INSERT INTO users (name, email) VALUES (?, ?)")
-		// 	.bind(name, email)
-		// 	.run();
-
-		// await DB.prepare("UPDATE users SET name = ?, email = ? WHERE id = ?")
-		// 	.bind(name, email, id)
-		// 	.run();
-
-		// await DB.prepare("DELETE FROM users WHERE id = ?").bind(id).run();
-
-		const statements = [
-			DB.prepare("INSERT INTO users (name, email) VALUES (?, ?)").bind('d', 'dd@ddd.com'),
-			DB.prepare("INSERT INTO users (name, email) VALUES (?, ?)").bind('e', 'ee@eee.com'),
-		]
-		await DB.batch(statements);
-
-		return new Response(JSON.stringify({ success: true }));
+		const DISCORD_WEBHOOK_URL = env.DISCORD_WEBHOOK_URL;
+		const kv = env.KV_NAMESPACE1;
+		const k = params.k?params.k:"d1";
+		// kv.put("c1", "hello");
+		let v = await kv.get(k);
+		console.log(v);
+		v = v ? v : "not found";
+		const message = {
+			content: v,
+			username: "Cloudflare bot1"
+		};
+		try {
+			const response = await fetch(DISCORD_WEBHOOK_URL, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(message)
+			});
+			if (!response.ok) {
+				const errorData = await response.json();
+				return new Response(JSON.stringify({ error: "Failed to send to Discord", details: errorData }), {
+					status: response.status,
+					headers: { "Content-Type": "application/json" }
+				});
+			}
+			return new Response("Message sent to Discord", {
+				status: 200,
+				headers: { "Content-Type": "application/json" }
+			});
+		} catch (error) {
+			return new Response(JSON.stringify({ error: "Internal Server Error", message: error.message }), {
+				status: 500,
+				headers: { "Content-Type": "application/json" }
+			});
+		}
 	}
 };
 export {
