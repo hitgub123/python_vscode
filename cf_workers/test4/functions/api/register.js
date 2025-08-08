@@ -3,10 +3,10 @@ import { hashPassword } from '../utils/auth.js';
 export async function onRequestPost({ request, env }) {
   try {
     const { email, password } = await request.json();
-
+    const minPasswordLength = 3;
     // 1. 数据校验
-    if (!email || !password || password.length < 8) {
-      return new Response(JSON.stringify({ success: false, message: '邮箱或密码无效 (密码至少8位)' }), {
+    if (!email || !password || password.length < minPasswordLength) {
+      return new Response(JSON.stringify({ success: false, message: `邮箱或密码无效 (密码至少${minPasswordLength}位)` }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
