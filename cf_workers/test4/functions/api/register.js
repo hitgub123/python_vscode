@@ -1,3 +1,5 @@
+import { hashPassword } from '../utils/auth.js';
+
 export async function onRequestPost({ request, env }) {
   try {
     const { email, password } = await request.json();
@@ -11,27 +13,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     // 2. 密码加密
-    const salt = crypto.getRandomValues(new Uint8Array(16));
-    const passwordKey = await crypto.subtle.importKey(
-      'raw',
-      new TextEncoder().encode(password),
-      { name: 'PBKDF2' },
-      false,
-      ['deriveBits']
-    );
-    const hashedPassword = await crypto.subtle.deriveBits(
-      {
-        name: 'PBKDF2',
-        salt: salt,
-        iterations: 100000,
-        hash: 'SHA-256',
-      },
-      passwordKey,
-      256
-    );
-
-    // 将 salt 和哈希后的密码组合存储
-    const password_hash = `${Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('')}:${Array.from(new Uint8Array(hashedPassword)).map(b => b.toString(16).padStart(2, '0')).join('')}`;
+    const password_hash = await hashPassword(password);
 
     // 3. 存入数据库
     const ps = env.DB.prepare('INSERT INTO Users (email, password_hash) VALUES (?, ?)');

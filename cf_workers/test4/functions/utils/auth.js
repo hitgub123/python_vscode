@@ -49,3 +49,30 @@ export async function verifyPassword(password, storedHash) {
   
   return derivedKeyHex === hashHex;
 }
+
+// 密码哈希函数
+export async function hashPassword(password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const passwordKey = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(password),
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits']
+  );
+  const hashedPassword = await crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt: salt,
+      iterations: 100000,
+      hash: 'SHA-256',
+    },
+    passwordKey,
+    256
+  );
+
+  // 将 salt 和哈希后的密码组合存储
+  const password_hash = `${Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('')}:${Array.from(new Uint8Array(hashedPassword)).map(b => b.toString(16).padStart(2, '0')).join('')}`;
+  
+  return password_hash;
+}
