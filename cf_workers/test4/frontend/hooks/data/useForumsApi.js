@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const useForumsApi = () => {
     const forgotPassword = async (email) => {
         const response = await fetch(`${process.env.FORU_MS_API_URL}/auth/forgot-password`, {
@@ -10,7 +12,7 @@ const useForumsApi = () => {
         });
         const data = await response.json();
         return data;
-    };    
+    };
 
     const resetPassword = async (email, password, token) => {
         const response = await fetch(`${process.env.FORU_MS_API_URL}/auth/reset-password`, {
@@ -99,8 +101,8 @@ const useForumsApi = () => {
         return data;
     };
 
-    const fetchThreads = async (page = 1) => {
-        const response = await fetch(`${process.env.FORU_MS_API_URL}/threads?page=${page}`, {
+    const fetchArticles = async (page = 1) => {
+        const response = await fetch(`${process.env.FORU_MS_API_URL}/articles?page=${page}`, {
             method: 'GET',
             headers: {
                 'x-api-key': process.env.FORU_MS_API_KEY,
@@ -110,8 +112,8 @@ const useForumsApi = () => {
         return data;
     };
 
-    const createThread = async (title, body, userId) => {
-        const response = await fetch(`${process.env.FORU_MS_API_URL}/thread`, {
+    const createArticle = async (title, body, userId) => {
+        const response = await fetch(`${process.env.FORU_MS_API_URL}/article`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -123,8 +125,8 @@ const useForumsApi = () => {
         return data;
     };
 
-    const fetchThread = async (id) => {
-        const response = await fetch(`${process.env.FORU_MS_API_URL}/thread/${id}`, {
+    const fetchArticle = async (id) => {
+        const response = await fetch(`${process.env.FORU_MS_API_URL}/article/${id}`, {
             method: 'GET',
             headers: {
                 'x-api-key': process.env.FORU_MS_API_KEY,
@@ -134,8 +136,8 @@ const useForumsApi = () => {
         return data;
     };
 
-    const updateThread = async (id, title, body) => {
-        const response = await fetch(`${process.env.FORU_MS_API_URL}/thread/${id}`, {
+    const updateArticle = async (id, title, body) => {
+        const response = await fetch(`${process.env.FORU_MS_API_URL}/article/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -147,8 +149,8 @@ const useForumsApi = () => {
         return data;
     };
 
-    const deleteThread = async (id) => {
-        const response = await fetch(`${process.env.FORU_MS_API_URL}/thread/${id}`, {
+    const deleteArticle = async (id) => {
+        const response = await fetch(`${process.env.FORU_MS_API_URL}/article/${id}`, {
             method: 'DELETE',
             headers: {
                 'x-api-key': process.env.FORU_MS_API_KEY,
@@ -158,8 +160,8 @@ const useForumsApi = () => {
         return data;
     };
 
-    const fetchThreadPosts = async (threadId, page = 1) => {
-        const response = await fetch(`${process.env.FORU_MS_API_URL}/thread/${threadId}/posts?page=${page}`, {
+    const fetchArticlePosts = async (articleId, page = 1) => {
+        const response = await fetch(`${process.env.FORU_MS_API_URL}/article/${articleId}/posts?page=${page}`, {
             method: 'GET',
             headers: {
                 'x-api-key': process.env.FORU_MS_API_KEY,
@@ -180,14 +182,14 @@ const useForumsApi = () => {
         return data;
     };
 
-    const createPost = async (body, threadId, userId) => {
+    const createPost = async (body, articleId, userId) => {
         const response = await fetch(`${process.env.FORU_MS_API_URL}/post`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'x-api-key': process.env.FORU_MS_API_KEY,
             },
-            body: JSON.stringify({ body, threadId, userId }),
+            body: JSON.stringify({ body, articleId, userId }),
         });
         const data = await response.json();
         return data;
@@ -228,6 +230,7 @@ const useForumsApi = () => {
         return data;
     };
 
+    
     const search = async (query, type, page = 1) => {
         const response = await fetch(`${process.env.FORU_MS_API_URL}/search/${query}?type=${type}&page=${page}`, {
             method: 'POST',
@@ -239,6 +242,37 @@ const useForumsApi = () => {
         return data;
     };
 
+    const searchArticle = async () => {
+        // const response = await fetch('http://localhost:8788/api/searchArticle', {
+        // const response = await fetch('http://localhost:8788/workers-api/searchArticle', {
+        const response = await fetch(`${process.env.project_URL}/api/searchArticle`, {
+        // const response = await fetch(`${process.env.project_URL}/workers-api/searchArticle`, {
+            // method: 'POST',
+            method: 'GET',
+        });
+
+        // 打印状态码和状态文本
+        console.log('Response Status:', response.status, response.statusText);
+
+        // 将返回结果作为纯文本读取
+        const responseText = await response.text();
+        // const responseText = await response.json();
+        console.log('Response Text:', responseText);
+
+        // 只有在确认是JSON后才尝试解析
+        if (response.ok) {
+            const data = JSON.parse(responseText);
+            // console.log('Parsed Data:', data);
+            return data;
+        }
+
+    };
+
+    // const API_URL = '/api/'; // Vite 会自动代理到我们的 Functions
+    // const searchArticle = (userData) => {
+    //     return axios.post(API_URL + 'searchArticle');
+    // };
+
     return {
         forgotPassword,
         resetPassword,
@@ -248,18 +282,20 @@ const useForumsApi = () => {
         updateUser,
         fetchUser,
         deleteUser,
-        fetchThreads,
-        createThread,
-        fetchThread,
-        updateThread,
-        deleteThread,
-        fetchThreadPosts,
+        fetchArticles,
+        createArticle,
+        fetchArticle,
+        updateArticle,
+        deleteArticle,
+        fetchArticlePosts,
         fetchPosts,
         createPost,
         fetchPost,
         updatePost,
         deletePost,
         search,
+        searchArticle
+
     };
 };
 

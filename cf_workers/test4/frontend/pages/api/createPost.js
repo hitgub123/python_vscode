@@ -1,9 +1,9 @@
 import useForumsApi from '@/hooks/data/useForumsApi';
 export default async function handler(req, res) {
-    const { body, threadId, userId } = req.body;
+    const { body, articleId, userId } = req.body;
     const api = useForumsApi();
     try {
-        const postData = await api.createPost(body, threadId, userId);
+        const postData = await api.createPost(body, articleId, userId);
         return res.json(postData);
     } catch (error) {
         console.error('Error creating post:', error);

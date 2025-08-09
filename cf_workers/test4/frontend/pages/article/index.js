@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
-const Thread = () => {
+const Article = () => {
     const router = useRouter();
 
     useEffect(() => {
@@ -11,4 +11,4 @@ const Thread = () => {
     return null;
 };
 
-export default Thread;
+export default Article;

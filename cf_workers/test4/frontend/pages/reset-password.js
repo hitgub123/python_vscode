@@ -7,11 +7,11 @@ import toast, { Toaster } from 'react-hot-toast';
 import Cookies from 'js-cookie';
 import { useRouter } from "next/router";
 
-const ResetPassword = ({ forumUser }) => {
+const ResetPassword = () => {
     const [submittingState, setSubmittingState] = useState(false);
 
     const router = useRouter();
-  
+    const forumUser = {};
     if (forumUser?.id){
       router.push(`/`);
     }
@@ -150,23 +150,23 @@ const ResetPassword = ({ forumUser }) => {
     );
 };
 
-export async function getServerSideProps(context) {
-  const api = useForumsApi();
-  const { forumUserToken } = context.req.cookies;
-  let forumUser = null;
+// export async function getServerSideProps(context) {
+//   const api = useForumsApi();
+//   const { forumUserToken } = context.req.cookies;
+//   let forumUser = null;
 
-  if (forumUserToken) {
-      const userResponse = await api.fetchUser(forumUserToken);
-      if (userResponse?.id) {
-          forumUser = userResponse;
-      }
-  }
+//   if (forumUserToken) {
+//       const userResponse = await api.fetchUser(forumUserToken);
+//       if (userResponse?.id) {
+//           forumUser = userResponse;
+//       }
+//   }
   
-  return {
-      props: {
-          forumUser,
-      }
-  };
-}
+//   return {
+//       props: {
+//           forumUser,
+//       }
+//   };
+// }
 
 export default ResetPassword;

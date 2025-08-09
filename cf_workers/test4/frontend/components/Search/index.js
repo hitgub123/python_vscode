@@ -1,15 +1,14 @@
-import { useState, useCallback } from 'react';
-import useForumsApi from '@/hooks/data/useForumsApi';
+import { useState } from 'react';
 
 export default function Search({ onSearchResults }) {
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchType, setSearchType] = useState('Threads');
+    const [searchType, setSearchType] = useState('Articles');
     const [isSubmitting, setSubmittingState] = useState(false);
 
     const handleSearch = async (e) => {
         e.preventDefault();
         setSubmittingState(true);
-        
+
         try {
             const response = await fetch('/api/search', {
                 method: 'POST',
@@ -28,7 +27,7 @@ export default function Search({ onSearchResults }) {
 
             const searchData = await response.json();
             console.log('Search results:', searchData);
-            onSearchResults(searchData.threads);
+            onSearchResults(searchData.articles);
         } catch (error) {
             console.error('Error searching:', error);
         }
@@ -39,7 +38,7 @@ export default function Search({ onSearchResults }) {
     return (
         <div className="w-full md:w-1/2 pb-3 md:pb-0 md:pr-3 md:border-r border-gray-300">
             <h3 className="text-xl text-gray-900 mb-2">
-                Search for threads
+                Search for article
             </h3>
             <form onSubmit={handleSearch}>
                 <div className="flex flex-col">
@@ -70,6 +69,7 @@ export default function Search({ onSearchResults }) {
                             id="search"
                             className="text-gray-600 focus:outline-none focus:border focus:border-blue-700 font-normal w-full h-10 flex items-center pl-12 text-sm border-gray-300 rounded border bg-gray-100"
                             placeholder="Search"
+                            disabled="disabled"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             required
@@ -100,10 +100,11 @@ export default function Search({ onSearchResults }) {
                                 aria-label="Selected tab"
                                 className="relative z-10 cursor-pointer focus:outline-none focus:border-gray-800 focus:shadow-outline-gray text-sm form-select block w-full py-2 px-2 xl:px-3 border border-gray-300 rounded text-gray-600 appearance-none bg-transparent"
                                 value={searchType}
+                                disabled="disabled"
                                 onChange={(e) => setSearchType(e.target.value)}
                             >
-                                <option key="threads" value="Threads" className="text-sm text-gray-600">
-                                    Threads
+                                <option key="articles" value="Articles" className="text-sm text-gray-600">
+                                    Articles
                                 </option>
                                 <option key="posts" value="Posts" className="text-sm text-gray-600">
                                     Posts

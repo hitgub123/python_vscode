@@ -47,3 +47,13 @@ export async function onRequestPost({ request, env }) {
     });
   }
 }
+
+
+export async function onRequestGet({ request, env }) {
+
+  return new Response(JSON.stringify({ success: false, message: '败败败败败败' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  
+}
