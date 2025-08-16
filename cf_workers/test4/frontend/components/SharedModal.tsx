@@ -46,6 +46,9 @@ export default function SharedModal({
   });
 
   let currentImage = images ? images[index] : currentPhoto;
+  console.log('sharedmodal images', images);
+  console.log('sharedmodal index', index);
+  console.log('sharedmodal currentImage', currentImage);
 
   return (
     <MotionConfig
