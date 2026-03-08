@@ -16,3 +16,4 @@ gemini_cli/liaozhai_agent/.env
 wrangler.jsonc
 **/*.json
 **/.*
+*.jpg
