@@ -5,3 +5,6 @@ def score_to_grade(score):
         return "及格"
     else:
         return "不及格"
+
+def f():
+    return
